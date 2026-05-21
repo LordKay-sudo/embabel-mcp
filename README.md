@@ -21,6 +21,8 @@ flowchart LR
 
 ## MCP tools
 
+Most tools accept optional `format`: **`markdown`** (default) or **`json`**.
+
 | Tool | BioInsight API |
 |------|----------------|
 | `bioinsight_health` | `GET /api/v1/health` |
@@ -28,9 +30,35 @@ flowchart LR
 | `search_genes` | `GET /api/v1/genes?q=` |
 | `search_diseases` | `GET /api/v1/diseases?q=` |
 | `get_gene` | `GET /api/v1/genes/{id}` |
+| `get_gene_diseases` | `GET /api/v1/genes/{id}/diseases` (ranked by score) |
+| `get_disease` | `GET /api/v1/diseases/{id}` |
+| `get_disease_genes` | `GET /api/v1/diseases/{id}/genes` (top targets) |
+| `compare_genes` | `GET /api/v1/genes/compare?symbols=BRCA1,TP53` |
 | `get_gene_neighbors` | `GET /api/v1/genes/{id}/neighbors` |
 | `export_gene_subgraph` | `GET /api/v1/export/subgraph?gene_id=` |
-| `investigate_gene_symbol` | search + detail + neighbors (composite) |
+| `investigate_gene_symbol` | search + detail + ranked diseases + neighbors |
+
+## MCP resources
+
+| URI | Description |
+|-----|-------------|
+| `bioinsight://schema` | Graph model + example Cypher |
+| `bioinsight://provenance` | Dataset scope and limitations |
+| `bioinsight://stats` | Live counts from the running API |
+
+## MCP prompts
+
+| Prompt | Use case |
+|--------|----------|
+| `summarize-gene-targets` | Investigate a symbol and summarize associations |
+| `compare-gene-pair` | Compare two genes and overlapping diseases |
+| `top-targets-for-disease` | Find ranked targets for a disease name |
+
+## Example questions
+
+- *“What are the top disease associations for BRCA1?”* → `investigate_gene_symbol` or `get_gene_diseases`
+- *“Compare BRCA1 and TP53”* → `compare_genes`
+- *“Which genes target breast cancer?”* → `search_diseases` then `get_disease_genes`
 
 ## Prerequisites
 
@@ -93,7 +121,7 @@ Merge into `.cursor/mcp.json` (see `cursor-mcp.example.json`):
 npx @modelcontextprotocol/inspector
 ```
 
-Connect to `http://localhost:1337/sse`, then call `bioinsight_stats` or `search_genes` with `query=BRCA1`.
+Connect to `http://localhost:1337/sse`, then try `compare_genes` with `symbols=BRCA1,TP53` or open prompt `summarize-gene-targets`.
 
 ## Configuration
 
