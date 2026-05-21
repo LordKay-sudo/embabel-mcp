@@ -107,6 +107,31 @@ Connect to `http://localhost:1337/sse`, then call `bioinsight_stats` or `search_
 
 ## Docker
 
+### Full stack (with bioinsight-graph)
+
+Clone both repos side by side, add `OPENAI_API_KEY` to bioinsight-graph `.env`, then:
+
+```bash
+cd bioinsight-graph
+docker compose -f docker-compose.yml -f docker-compose.mcp.yml up --build
+```
+
+| Service | URL |
+|---------|-----|
+| MCP (SSE) | http://localhost:1337/sse |
+| API | http://localhost:8000/docs |
+
+### MCP only (API already on :8000)
+
+```bash
+cd embabel-mcp
+copy .env.example .env
+# set OPENAI_API_KEY
+docker compose up --build
+```
+
+Or a single image:
+
 ```bash
 docker build -t embabel-mcp .
 docker run --rm -p 1337:1337 \
