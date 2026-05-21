@@ -1,8 +1,10 @@
 # embabel-mcp
 
-**MCP server** for [BioInsight Graph](https://github.com/LordKay-sudo/bioinsight-graph) — exposes the disease–target knowledge graph API as [Model Context Protocol](https://modelcontextprotocol.io/) tools for Cursor, Claude Desktop, and other MCP clients.
+**MCP integration for [BioInsight Graph](https://github.com/LordKay-sudo/bioinsight-graph)** — the disease–target knowledge graph application (Neo4j, FastAPI, React explorer). This repo adds an Embabel MCP server so Cursor, Claude Desktop, and other clients can call the **same** `/api/v1` surface the web UI uses.
 
-Built with [Embabel Agent](https://docs.embabel.com/embabel-agent/guide/0.3.1/) (`embabel-agent-starter-mcpserver`). Tools proxy the existing FastAPI service; Neo4j and Cypher stay in bioinsight-graph.
+BioInsight Graph is the product. embabel-mcp is not a replacement, fork, or “wrapper app” — it is agent tooling built on top of that API.
+
+Built with [Embabel Agent](https://docs.embabel.com/embabel-agent/guide/0.3.1/) (`embabel-agent-starter-mcpserver`).
 
 > **Data notice:** Demo/sample Open Targets–style data only — not for clinical decisions.
 
@@ -19,7 +21,7 @@ flowchart LR
   API --> N4j
 ```
 
-### Platform (with optional KG RAG)
+### How this fits the BioInsight platform
 
 ```mermaid
 flowchart TB
@@ -34,13 +36,15 @@ flowchart TB
   E -. KG_RAG_ENABLED .-> RAG
 ```
 
-### BioInsight UI (unchanged — still the star of the show)
+### BioInsight Graph UI
+
+The primary interface — search, ranked associations, and force-directed graph exploration. Run it at http://localhost:8080 (see [bioinsight-graph](https://github.com/LordKay-sudo/bioinsight-graph)).
 
 | Search | Force-directed graph |
 |--------|----------------------|
 | ![BioInsight search](https://raw.githubusercontent.com/LordKay-sudo/bioinsight-graph/main/docs/screenshot-search.png) | ![BioInsight graph](https://raw.githubusercontent.com/LordKay-sudo/bioinsight-graph/main/docs/screenshot-graph.png) |
 
-Full gene detail: [bioinsight-graph screenshot](https://github.com/LordKay-sudo/bioinsight-graph/blob/main/docs/screenshot-gene-detail.png).
+Full gene detail: [screenshot-gene-detail.png](https://github.com/LordKay-sudo/bioinsight-graph/blob/main/docs/screenshot-gene-detail.png) · Walkthrough: [demo-walkthrough.gif](https://github.com/LordKay-sudo/bioinsight-graph/blob/main/docs/demo-walkthrough.gif)
 
 ## Embabel agent (Phase 3)
 
