@@ -88,6 +88,24 @@ public class BioInsightMcpResources {
     }
 
     @McpResource(
+            uri = "bioinsight://human-in-the-loop",
+            name = "Human-in-the-loop guide",
+            description = "When and how humans should verify graph results (UI, MCP, Embabel WaitFor)")
+    public String humanInTheLoop() {
+        return """
+                # Human-in-the-loop
+
+                1. **BioInsight UI** — http://localhost:8080 (ground truth)
+                2. **MCP prompt** — `review-gene-report`
+                3. **Embabel agent** — `bioinsight.hitl.enabled=true` for WaitFor approval forms
+
+                MCP mode defaults to auto-approve so Cursor is not blocked.
+
+                Full doc: https://github.com/LordKay-sudo/bioinsight-graph/blob/main/docs/HUMAN_IN_THE_LOOP.md
+                """;
+    }
+
+    @McpResource(
             uri = "bioinsight://ecosystem",
             name = "Research platform URLs",
             description = "Browser and API endpoints for BioInsight, KG RAG, Neo4j, and this MCP server")

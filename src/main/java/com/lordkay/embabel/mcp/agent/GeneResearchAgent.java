@@ -8,22 +8,21 @@ import com.embabel.agent.api.annotation.AchievesGoal;
 import com.embabel.agent.api.annotation.Action;
 import com.embabel.agent.api.annotation.Agent;
 import com.embabel.agent.api.annotation.Export;
+import com.embabel.agent.core.hitl.WaitFor;
 import com.embabel.agent.domain.io.UserInput;
 import com.lordkay.embabel.mcp.client.BioInsightApiClient;
+import com.lordkay.embabel.mcp.config.BioInsightHitlProperties;
 import com.lordkay.embabel.mcp.domain.GeneGraphBundle;
+import com.lordkay.embabel.mcp.domain.GeneResearchApproval;
 import com.lordkay.embabel.mcp.domain.GeneResearchReport;
 import com.lordkay.embabel.mcp.domain.GeneSymbolQuery;
 import com.lordkay.embabel.mcp.format.BioInsightMarkdown;
 import com.lordkay.embabel.mcp.util.GeneIdParser;
 
-/**
- * Embabel agent published to MCP as {@code research_gene} — multi-step graph lookup
- * without mutating the BioInsight Graph application.
- */
 @Agent(
         name = "GeneResearchAgent",
         description =
-                "Research a gene symbol: resolve ID, ranked disease associations, and neighborhood summary",
+                "Research a gene symbol with optional human approval before the final report",
         beanName = "geneResearchAgent")
 public class GeneResearchAgent {
 
@@ -32,9 +31,11 @@ public class GeneResearchAgent {
             Pattern.compile("(?i)\\bgene\\s+([A-Z][A-Z0-9]{1,14})\\b");
 
     private final BioInsightApiClient api;
+    private final BioInsightHitlProperties hitl;
 
-    public GeneResearchAgent(BioInsightApiClient api) {
+    public GeneResearchAgent(BioInsightApiClient api, BioInsightHitlProperties hitl) {
         this.api = api;
+        this.hitl = hitl;
     }
 
     @Action
@@ -58,15 +59,52 @@ public class GeneResearchAgent {
         return new GeneGraphBundle(query.symbol(), geneId, detail, diseases, neighbors);
     }
 
+    @Action(
+            description =
+                    "Pause for human review of graph evidence (Embabel WaitFor when HITL enabled)")
+    public GeneResearchApproval requestHumanReview(GeneGraphBundle bundle) {
+        String preview = buildPreview(bundle);
+        if (!hitl.isEnabled()) {
+            return new GeneResearchApproval(
+                    true,
+                    "Auto-approved (MCP/server mode). Enable bioinsight.hitl.enabled for WaitFor forms.");
+        }
+        return WaitFor.formSubmission(
+                """
+                ## Human review required: %s
+
+                Open BioInsight and verify: http://localhost:8080/gene/%s
+
+                %s
+
+                Approve only if the symbol, diseases, and scores match what you see in the UI.
+                """
+                        .formatted(bundle.symbol(), bundle.geneId(), preview),
+                GeneResearchApproval.class);
+    }
+
     @AchievesGoal(
-            description = "Produce a markdown research report for a gene symbol (demo data only)",
+            description = "Produce a markdown research report after optional human approval",
             export =
                     @Export(
                             remote = true,
                             name = "research_gene",
                             startingInputTypes = {GeneSymbolQuery.class, UserInput.class}))
     @Action
-    public GeneResearchReport writeReport(GeneGraphBundle bundle) {
+    public GeneResearchReport writeReport(GeneGraphBundle bundle, GeneResearchApproval approval) {
+        if (!approval.approved()) {
+            String notes =
+                    approval.reviewerNotes() == null || approval.reviewerNotes().isBlank()
+                            ? "_No notes provided._"
+                            : approval.reviewerNotes();
+            return new GeneResearchReport(
+                    "# Research cancelled\n\nHuman reviewer declined the report for **"
+                            + bundle.symbol()
+                            + "**.\n\n"
+                            + notes
+                            + "\n");
+        }
+
         StringBuilder md = new StringBuilder();
         md.append("# Gene research report: **").append(bundle.symbol()).append("**\n\n");
         md.append("_Demo Open Targets–style sample — not for clinical use._\n\n");
@@ -75,8 +113,15 @@ public class GeneResearchAgent {
         md.append(BioInsightMarkdown.format(bundle.diseasesJson())).append("\n");
         md.append(BioInsightMarkdown.format(bundle.neighborsJson())).append("\n");
         md.append("---\n\n");
+        md.append("**Human review:** ").append(approval.reviewerNotes()).append("\n\n");
         md.append("Explore in browser: http://localhost:8080/gene/").append(bundle.geneId()).append("\n");
         return new GeneResearchReport(md.toString());
+    }
+
+    private static String buildPreview(GeneGraphBundle bundle) {
+        return BioInsightMarkdown.format(bundle.detailJson())
+                + "\n"
+                + BioInsightMarkdown.format(bundle.diseasesJson());
     }
 
     static String extractSymbol(String raw) {

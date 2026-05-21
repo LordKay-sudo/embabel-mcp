@@ -86,6 +86,17 @@ Most tools accept optional `format`: **`markdown`** (default) or **`json`**.
 | `compare-gene-pair` | Compare two genes and overlapping diseases |
 | `top-targets-for-disease` | Find ranked targets for a disease name |
 | `graph-and-literature` | Graph evidence + `kg_rag_ask` when enabled |
+| `review-gene-report` | **HITL:** human verifies http://localhost:8080 before trusting report |
+
+## Human-in-the-loop
+
+| Layer | How |
+|-------|-----|
+| **BioInsight UI** | http://localhost:8080 — visual ground truth |
+| **MCP prompt** | `review-gene-report` |
+| **Embabel agent** | `BIOINSIGHT_HITL_ENABLED=true` → `WaitFor` approval form (not for default MCP) |
+
+Guide: [docs/HUMAN_IN_THE_LOOP.md](docs/HUMAN_IN_THE_LOOP.md) · MCP resource `bioinsight://human-in-the-loop`
 
 ## KG RAG bridge (Phase 4, optional)
 

@@ -73,6 +73,29 @@ public class BioInsightMcpPrompts {
     }
 
     @McpPrompt(
+            name = "review-gene-report",
+            description =
+                    "Human-in-the-loop: verify BioInsight UI before accepting an agent gene report")
+    public GetPromptResult reviewGeneReport(
+            @McpArg(name = "symbol", description = "Gene symbol to verify, e.g. BRCA1", required = true)
+                    String symbol) {
+        String text =
+                """
+                Human-in-the-loop workflow (you are the reviewer):
+
+                1. Ask the agent to run `investigate_gene_symbol` or `research_gene` for **%s** (markdown).
+                2. Open http://localhost:8080 — search **%s** and open the gene detail page.
+                3. Compare: Ensembl ID, top disease scores, and graph neighbors vs the agent report.
+                4. If they match, summarize for the user; if not, list discrepancies and do not claim clinical validity.
+                5. State: demo Open Targets–style sample only.
+
+                Optional: read MCP resource `bioinsight://human-in-the-loop`.
+                """
+                        .formatted(symbol, symbol);
+        return prompt("HITL review: " + symbol, text);
+    }
+
+    @McpPrompt(
             name = "graph-and-literature",
             description =
                     "Combine BioInsight graph evidence with KG RAG document Q&A (requires KG_RAG_ENABLED)")

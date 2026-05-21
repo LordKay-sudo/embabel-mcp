@@ -4,11 +4,16 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
+import com.lordkay.embabel.mcp.config.BioInsightHitlProperties;
 import com.lordkay.embabel.mcp.config.BioInsightProperties;
 import com.lordkay.embabel.mcp.config.KgRagProperties;
 
 @SpringBootApplication
-@EnableConfigurationProperties({BioInsightProperties.class, KgRagProperties.class})
+@EnableConfigurationProperties({
+    BioInsightProperties.class,
+    BioInsightHitlProperties.class,
+    KgRagProperties.class
+})
 public class EmbabelMcpApplication {
 
     public static void main(String[] args) {
