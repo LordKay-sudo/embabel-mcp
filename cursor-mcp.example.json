@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "bioinsight-graph": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "http://localhost:1337/sse"]
+    }
+  }
+}

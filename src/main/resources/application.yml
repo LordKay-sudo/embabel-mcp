@@ -1,0 +1,28 @@
+server:
+  port: ${MCP_SERVER_PORT:1337}
+
+spring:
+  application:
+    name: embabel-mcp-bioinsight
+  ai:
+    mcp:
+      server:
+        type: SYNC
+
+embabel:
+  models:
+    default-llm: ${EMBABEL_DEFAULT_LLM:x-ai/grok-4.1-fast:free}
+
+# OpenRouter (set OPENAI_API_KEY + OPENAI_BASE_URL=https://openrouter.ai)
+spring.ai.openai:
+  api-key: ${OPENAI_API_KEY:}
+  base-url: ${OPENAI_BASE_URL:https://api.openai.com}
+
+bioinsight:
+  api-base-url: ${BIOINSIGHT_API_BASE_URL:http://localhost:8000/api/v1}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
