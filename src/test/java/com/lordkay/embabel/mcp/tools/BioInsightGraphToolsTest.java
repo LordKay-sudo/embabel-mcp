@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 import org.junit.jupiter.api.Test;
 
+import com.lordkay.embabel.mcp.util.GeneIdParser;
+
 class BioInsightGraphToolsTest {
 
     @Test
@@ -13,11 +15,11 @@ class BioInsightGraphToolsTest {
                 """
                 [{"id":"ENSG00000012048","symbol":"BRCA1","name":"BRCA1 DNA repair"}]
                 """;
-        assertEquals("ENSG00000012048", BioInsightGraphTools.extractFirstGeneId(json));
+        assertEquals("ENSG00000012048", GeneIdParser.extractFirstGeneId(json));
     }
 
     @Test
     void extractFirstGeneId_returnsNullWhenEmpty() {
-        assertNull(BioInsightGraphTools.extractFirstGeneId("[]"));
+        assertNull(GeneIdParser.extractFirstGeneId("[]"));
     }
 }

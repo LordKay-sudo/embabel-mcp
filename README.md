@@ -19,6 +19,37 @@ flowchart LR
   API --> N4j
 ```
 
+### Platform (with optional KG RAG)
+
+```mermaid
+flowchart TB
+  C[MCP client]
+  E[embabel-mcp]
+  BAPI[BioInsight API :8000]
+  BWEB[BioInsight UI :8080]
+  RAG[kg-rag-demo :8001]
+  C --> E
+  E --> BAPI
+  BWEB --> BAPI
+  E -. KG_RAG_ENABLED .-> RAG
+```
+
+### BioInsight UI (unchanged — still the star of the show)
+
+| Search | Force-directed graph |
+|--------|----------------------|
+| ![BioInsight search](https://raw.githubusercontent.com/LordKay-sudo/bioinsight-graph/main/docs/screenshot-search.png) | ![BioInsight graph](https://raw.githubusercontent.com/LordKay-sudo/bioinsight-graph/main/docs/screenshot-graph.png) |
+
+Full gene detail: [bioinsight-graph screenshot](https://github.com/LordKay-sudo/bioinsight-graph/blob/main/docs/screenshot-gene-detail.png).
+
+## Embabel agent (Phase 3)
+
+| MCP export | Description |
+|------------|-------------|
+| **`research_gene`** | `GeneResearchAgent` — parse symbol → load graph → markdown report + link to web UI |
+
+Starting inputs: `GeneSymbolQuery` (symbol string) or natural language via `UserInput`.
+
 ## MCP tools
 
 Most tools accept optional `format`: **`markdown`** (default) or **`json`**.
@@ -45,6 +76,7 @@ Most tools accept optional `format`: **`markdown`** (default) or **`json`**.
 | `bioinsight://schema` | Graph model + example Cypher |
 | `bioinsight://provenance` | Dataset scope and limitations |
 | `bioinsight://stats` | Live counts from the running API |
+| `bioinsight://ecosystem` | All browser/API URLs (BioInsight, Neo4j, KG RAG, MCP) |
 
 ## MCP prompts
 
@@ -53,6 +85,16 @@ Most tools accept optional `format`: **`markdown`** (default) or **`json`**.
 | `summarize-gene-targets` | Investigate a symbol and summarize associations |
 | `compare-gene-pair` | Compare two genes and overlapping diseases |
 | `top-targets-for-disease` | Find ranked targets for a disease name |
+| `graph-and-literature` | Graph evidence + `kg_rag_ask` when enabled |
+
+## KG RAG bridge (Phase 4, optional)
+
+Set `KG_RAG_ENABLED=true` and run [kg-rag-demo](https://github.com/LordKay-sudo/kg-rag-demo) on port **8001**:
+
+| Tool | API |
+|------|-----|
+| `kg_rag_health` | `GET /api/v1/health` |
+| `kg_rag_ask` | `POST /api/v1/ask` |
 
 ## Example questions
 
@@ -132,6 +174,8 @@ Connect to `http://localhost:1337/sse`, then try `compare_genes` with `symbols=B
 | `OPENAI_API_KEY` | — | Required (OpenAI or OpenRouter) |
 | `OPENAI_BASE_URL` | `https://openrouter.ai` | OpenAI-compatible API base |
 | `EMBABEL_DEFAULT_LLM` | `x-ai/grok-4.1-fast:free` | Default model id |
+| `KG_RAG_ENABLED` | `false` | Enable kg-rag-demo tools |
+| `KG_RAG_API_BASE_URL` | `http://localhost:8001/api/v1` | KG RAG FastAPI base |
 
 ## Docker
 
@@ -147,6 +191,7 @@ docker compose -f docker-compose.yml -f docker-compose.mcp.yml up --build
 | Service | URL |
 |---------|-----|
 | MCP (SSE) | http://localhost:1337/sse |
+| BioInsight Web UI | http://localhost:8080 |
 | API | http://localhost:8000/docs |
 
 ### MCP only (API already on :8000)
@@ -178,7 +223,7 @@ mvn spring-boot:run
 ## Related repos
 
 - [bioinsight-graph](https://github.com/LordKay-sudo/bioinsight-graph) — Neo4j graph, FastAPI, React UI
-- [kg-rag-demo](https://github.com/LordKay-sudo/kg-rag-demo) — optional future second MCP for document RAG
+- [kg-rag-demo](https://github.com/LordKay-sudo/kg-rag-demo) — optional document RAG (`KG_RAG_ENABLED=true`)
 
 ## License
 

@@ -32,6 +32,20 @@ public class BioInsightMcpResources {
             ```
             """;
 
+    private static final String ECOSYSTEM = """
+            # LordKay research platform (local URLs)
+
+            | Application | Browser | API | Role |
+            |-------------|---------|-----|------|
+            | **BioInsight Graph** | http://localhost:8080 | http://localhost:8000/docs | Structured disease–target graph |
+            | **Neo4j (BioInsight)** | http://localhost:7474 | bolt://localhost:7687 | Graph storage |
+            | **KG RAG Demo** | http://localhost:5173 (dev) | http://localhost:8001/docs | Document RAG + citations |
+            | **Neo4j (KG RAG)** | http://localhost:7475 | bolt://localhost:7688 | Separate graph (no port clash) |
+            | **embabel-mcp** | — | http://localhost:1337/sse | MCP tools + agents for Cursor |
+
+            Enable KG RAG bridge: `KG_RAG_ENABLED=true` and run kg-rag-demo API on port 8001.
+            """;
+
     private static final String PROVENANCE = """
             # Data provenance
 
@@ -71,5 +85,13 @@ public class BioInsightMcpResources {
     public String liveStats() {
         String json = api.get("/stats");
         return "# Live graph statistics\n\n```json\n" + json + "\n```\n";
+    }
+
+    @McpResource(
+            uri = "bioinsight://ecosystem",
+            name = "Research platform URLs",
+            description = "Browser and API endpoints for BioInsight, KG RAG, Neo4j, and this MCP server")
+    public String ecosystem() {
+        return ECOSYSTEM;
     }
 }

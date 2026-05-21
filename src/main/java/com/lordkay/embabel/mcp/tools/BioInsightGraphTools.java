@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import com.lordkay.embabel.mcp.client.BioInsightApiClient;
 import com.lordkay.embabel.mcp.format.BioInsightMarkdown;
+import com.lordkay.embabel.mcp.util.GeneIdParser;
 
 /**
  * MCP tools that proxy the BioInsight Graph FastAPI.
@@ -141,7 +142,7 @@ public class BioInsightGraphTools {
         if (searchJson.contains("\"error\":true")) {
             return respond(searchJson, format);
         }
-        String geneId = extractFirstGeneId(searchJson);
+        String geneId = GeneIdParser.extractFirstGeneId(searchJson);
         if (geneId == null) {
             return respond("{\"error\":true,\"detail\":\"No gene found for symbol: " + symbol + "\"}", format);
         }
@@ -181,18 +182,5 @@ public class BioInsightGraphTools {
 
     private static boolean wantsJson(String format) {
         return format != null && format.equalsIgnoreCase("json");
-    }
-
-    static String extractFirstGeneId(String searchJson) {
-        int idx = searchJson.indexOf("\"id\":\"");
-        if (idx < 0) {
-            return null;
-        }
-        int start = idx + 6;
-        int end = searchJson.indexOf('"', start);
-        if (end < 0) {
-            return null;
-        }
-        return searchJson.substring(start, end);
     }
 }

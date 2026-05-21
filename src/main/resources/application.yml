@@ -21,6 +21,10 @@ spring.ai.openai:
 bioinsight:
   api-base-url: ${BIOINSIGHT_API_BASE_URL:http://localhost:8000/api/v1}
 
+kg-rag:
+  enabled: ${KG_RAG_ENABLED:false}
+  api-base-url: ${KG_RAG_API_BASE_URL:http://localhost:8001/api/v1}
+
 management:
   endpoints:
     web:

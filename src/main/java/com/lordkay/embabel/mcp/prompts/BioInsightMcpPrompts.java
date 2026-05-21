@@ -72,6 +72,26 @@ public class BioInsightMcpPrompts {
         return prompt("Top targets for " + diseaseQuery, text);
     }
 
+    @McpPrompt(
+            name = "graph-and-literature",
+            description =
+                    "Combine BioInsight graph evidence with KG RAG document Q&A (requires KG_RAG_ENABLED)")
+    public GetPromptResult graphAndLiterature(
+            @McpArg(name = "geneOrTopic", description = "Gene symbol or topic, e.g. BRCA1", required = true)
+                    String geneOrTopic) {
+        String text =
+                """
+                Use BioInsight Graph MCP tools and (if available) KG RAG tools:
+
+                1. `research_gene` or `investigate_gene_symbol` for **%s** (markdown).
+                2. If `kg_rag_ask` is available, ask: "What does the literature say about %s and disease associations?"
+                3. Synthesize: structured scores from the graph vs cited sentences from documents.
+                4. State both are demo samples, not clinical advice.
+                """
+                        .formatted(geneOrTopic, geneOrTopic);
+        return prompt("Graph + literature: " + geneOrTopic, text);
+    }
+
     private static GetPromptResult prompt(String title, String userText) {
         return new GetPromptResult(
                 title, List.of(new PromptMessage(Role.USER, new TextContent(userText))));
