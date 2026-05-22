@@ -10,11 +10,22 @@ public class BioInsightProperties {
      */
     private String apiBaseUrl = "http://localhost:8000/api/v1";
 
+    /** BioInsight React UI base URL for deep links in markdown reports. */
+    private String webUiBaseUrl = "http://localhost:8080";
+
     public String getApiBaseUrl() {
         return apiBaseUrl;
     }
 
     public void setApiBaseUrl(String apiBaseUrl) {
         this.apiBaseUrl = apiBaseUrl;
+    }
+
+    public String getWebUiBaseUrl() {
+        return webUiBaseUrl;
+    }
+
+    public void setWebUiBaseUrl(String webUiBaseUrl) {
+        this.webUiBaseUrl = webUiBaseUrl;
     }
 }

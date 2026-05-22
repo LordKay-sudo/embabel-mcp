@@ -20,6 +20,7 @@ spring.ai.openai:
 
 bioinsight:
   api-base-url: ${BIOINSIGHT_API_BASE_URL:http://localhost:8000/api/v1}
+  web-ui-base-url: ${BIOINSIGHT_WEB_UI_URL:http://localhost:8080}
   hitl:
     enabled: ${BIOINSIGHT_HITL_ENABLED:false}
 

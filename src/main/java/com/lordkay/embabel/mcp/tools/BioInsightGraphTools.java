@@ -7,7 +7,9 @@ import org.springaicommunity.mcp.annotation.McpToolParam;
 import org.springframework.stereotype.Component;
 
 import com.lordkay.embabel.mcp.client.BioInsightApiClient;
+import com.lordkay.embabel.mcp.config.BioInsightProperties;
 import com.lordkay.embabel.mcp.format.BioInsightMarkdown;
+import com.lordkay.embabel.mcp.format.BioInsightProvenance;
 import com.lordkay.embabel.mcp.util.GeneIdParser;
 
 /**
@@ -18,9 +20,11 @@ import com.lordkay.embabel.mcp.util.GeneIdParser;
 public class BioInsightGraphTools {
 
     private final BioInsightApiClient api;
+    private final BioInsightProperties properties;
 
-    public BioInsightGraphTools(BioInsightApiClient api) {
+    public BioInsightGraphTools(BioInsightApiClient api, BioInsightProperties properties) {
         this.api = api;
+        this.properties = properties;
     }
 
     @McpTool(name = "bioinsight_health", description = "Check BioInsight Graph API liveness and Neo4j connectivity")
@@ -133,8 +137,49 @@ public class BioInsightGraphTools {
     }
 
     @McpTool(
+            name = "build_target_dossier",
+            description =
+                    """
+                    Workflow: resolve a gene symbol → detail, ranked diseases, neighborhood, live stats.
+                    Returns one markdown report with provenance footer and UI deep link.
+                    Use when handing off a target investigation (not for clinical decisions).
+                    Requires BioInsight API on BIOINSIGHT_API_BASE_URL.""")
+    public String buildTargetDossier(
+            @McpToolParam(description = "Gene symbol, e.g. BRCA1", required = true) String symbol,
+            @McpToolParam(description = "Max ranked diseases (default 15)", required = false) Integer diseaseLimit,
+            @McpToolParam(description = "Response format: markdown or json", required = false) String format) {
+        String searchJson = api.get("/genes", Map.of("q", symbol));
+        if (searchJson.contains("\"error\":true")) {
+            return respond(searchJson, format);
+        }
+        String geneId = GeneIdParser.extractFirstGeneId(searchJson);
+        if (geneId == null) {
+            return respond("{\"error\":true,\"detail\":\"No gene found for symbol: " + symbol + "\"}", format);
+        }
+        String detail = api.get("/genes/" + geneId);
+        String diseases =
+                api.get(
+                        "/genes/" + geneId + "/diseases",
+                        Map.of("limit", String.valueOf(diseaseLimit != null ? diseaseLimit : 15)));
+        String neighbors = api.get("/genes/" + geneId + "/neighbors");
+        String stats = api.get("/stats");
+        String payload =
+                """
+                {"symbol":"%s","gene_id":"%s","detail":%s,"diseases":%s,"neighbors":%s,"stats":%s}
+                """
+                        .formatted(symbol, geneId, detail, diseases, neighbors, stats);
+        if (wantsMarkdown(format)) {
+            return markdownDossier(symbol, geneId, detail, diseases, neighbors, stats);
+        }
+        return payload;
+    }
+
+    @McpTool(
             name = "investigate_gene_symbol",
-            description = "Search by symbol, then return gene detail + ranked diseases + neighbors")
+            description =
+                    """
+                    Search by symbol, then return gene detail + ranked diseases + neighbors.
+                    Lighter than build_target_dossier (no stats block). Prefer build_target_dossier for full handoff.""")
     public String investigateGeneSymbol(
             @McpToolParam(description = "Gene symbol, e.g. BRCA1", required = true) String symbol,
             @McpToolParam(description = "Response format: markdown or json", required = false) String format) {
@@ -155,14 +200,26 @@ public class BioInsightGraphTools {
                 """
                         .formatted(symbol, geneId, detail, diseases, neighbors);
         if (wantsMarkdown(format)) {
-            return "## Investigation: " + symbol + "\n\n"
-                    + BioInsightMarkdown.format(detail)
-                    + "\n"
-                    + BioInsightMarkdown.format(diseases)
-                    + "\n"
-                    + BioInsightMarkdown.format(neighbors);
+            return markdownDossier(symbol, geneId, detail, diseases, neighbors, null);
         }
         return payload;
+    }
+
+    private String markdownDossier(
+            String symbol,
+            String geneId,
+            String detail,
+            String diseases,
+            String neighbors,
+            String stats) {
+        StringBuilder sb = new StringBuilder("# Target dossier: ").append(symbol).append("\n\n");
+        sb.append(BioInsightMarkdown.format(detail)).append("\n");
+        sb.append(BioInsightMarkdown.format(diseases)).append("\n");
+        sb.append(BioInsightMarkdown.format(neighbors)).append("\n");
+        if (stats != null) {
+            sb.append(BioInsightMarkdown.format(stats)).append("\n");
+        }
+        return sb.append(BioInsightProvenance.footer(api, properties.getWebUiBaseUrl(), geneId)).toString();
     }
 
     private static String respond(String json, String format) {

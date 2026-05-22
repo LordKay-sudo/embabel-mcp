@@ -42,6 +42,9 @@ public final class BioInsightMarkdown {
             if (root.has("status") && root.has("neo4j")) {
                 return formatHealth(root);
             }
+            if (root.has("data_version") && root.has("disclaimer")) {
+                return formatMeta(root);
+            }
             if (root.has("symbol") && root.has("disease_count")) {
                 return formatGeneDetail(root);
             }
@@ -64,6 +67,33 @@ public final class BioInsightMarkdown {
         return "## BioInsight health\n\n"
                 + "- **Status:** " + n.get("status").asText() + "\n"
                 + "- **Neo4j:** " + n.get("neo4j").asBoolean() + "\n";
+    }
+
+    private static String formatMeta(JsonNode n) {
+        StringBuilder sb = new StringBuilder("## Dataset metadata\n\n");
+        sb.append("- **Service:** ").append(cell(n, "service")).append("\n");
+        sb.append("- **API version:** ").append(cell(n, "api_version")).append("\n");
+        sb.append("- **Data version:** `").append(cell(n, "data_version")).append("`\n");
+        sb.append("- **Release date:** ").append(cell(n, "release_date")).append("\n");
+        if (n.has("associations_are_correlative")) {
+            sb.append("- **Associations:** correlative (not causal)\n");
+        }
+        sb.append("\n**Disclaimer:** ").append(cell(n, "disclaimer")).append("\n");
+        if (n.has("sources") && n.get("sources").isArray()) {
+            sb.append("\n### Sources\n\n");
+            for (JsonNode s : n.get("sources")) {
+                sb.append("- [")
+                        .append(cell(s, "name"))
+                        .append("](")
+                        .append(cell(s, "url"))
+                        .append(")");
+                if (s.has("license") && !s.get("license").isNull()) {
+                    sb.append(" — ").append(s.get("license").asText());
+                }
+                sb.append("\n");
+            }
+        }
+        return sb.toString();
     }
 
     private static String formatStats(JsonNode n) {

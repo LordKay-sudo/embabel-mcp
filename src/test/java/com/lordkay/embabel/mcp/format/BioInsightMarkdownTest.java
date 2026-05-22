@@ -14,6 +14,20 @@ class BioInsightMarkdownTest {
     }
 
     @Test
+    void formatsMetaWithDisclaimer() {
+        String json =
+                """
+                {"service":"bioinsight-graph","api_version":"0.1.0","data_version":"demo-v1",\
+                "release_date":"2024-06-01","disclaimer":"Not for clinical use.",\
+                "associations_are_correlative":true,"sources":[{"name":"Open Targets","url":"https://platform.opentargets.org/","license":"CC0"}]}
+                """;
+        String md = BioInsightMarkdown.format(json);
+        assertTrue(md.contains("## Dataset metadata"));
+        assertTrue(md.contains("demo-v1"));
+        assertTrue(md.contains("Not for clinical"));
+    }
+
+    @Test
     void formatsCompareWithOverlap() {
         String json =
                 """

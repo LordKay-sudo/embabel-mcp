@@ -4,6 +4,7 @@ import org.springaicommunity.mcp.annotation.McpResource;
 import org.springframework.stereotype.Component;
 
 import com.lordkay.embabel.mcp.client.BioInsightApiClient;
+import com.lordkay.embabel.mcp.format.BioInsightMarkdown;
 
 /**
  * Read-only MCP resources for graph schema, provenance, and live statistics.
@@ -49,11 +50,12 @@ public class BioInsightMcpResources {
     private static final String PROVENANCE = """
             # Data provenance
 
-            - **Source:** Representative sample inspired by [Open Targets](https://www.opentargets.org/)
-            - **Scope:** ~30 genes, ~12 diseases, ~105 associations (demo MVP)
-            - **Not for clinical use** — suitable for portfolio demos and agent tooling tests
-            - **API:** https://github.com/LordKay-sudo/bioinsight-graph
-            - **MCP:** https://github.com/LordKay-sudo/embabel-mcp
+            Live metadata: use MCP resource `bioinsight://meta` or BioInsight `GET /api/v1/meta`.
+
+            Full document: https://github.com/LordKay-sudo/bioinsight-graph/blob/main/PROVENANCE.md
+
+            - Demo/sample Open Targets–style associations — **not for clinical use**
+            - Associations are **correlative**, not causal
             """;
 
     private final BioInsightApiClient api;
@@ -73,9 +75,21 @@ public class BioInsightMcpResources {
     @McpResource(
             uri = "bioinsight://provenance",
             name = "Data provenance",
-            description = "Dataset limitations and Open Targets–style sample notice")
+            description = "Dataset limitations and links to PROVENANCE.md")
     public String provenance() {
         return PROVENANCE;
+    }
+
+    @McpResource(
+            uri = "bioinsight://meta",
+            name = "Live dataset metadata",
+            description = "Data version, release date, sources, and disclaimer from GET /api/v1/meta")
+    public String liveMeta() {
+        String json = api.get("/meta");
+        if (json.contains("\"error\":true")) {
+            return PROVENANCE + "\n\n_Meta API unreachable._\n\n```json\n" + json + "\n```\n";
+        }
+        return BioInsightMarkdown.format(json) + "\n";
     }
 
     @McpResource(

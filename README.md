@@ -71,14 +71,16 @@ Most tools accept optional `format`: **`markdown`** (default) or **`json`**.
 | `compare_genes` | `GET /api/v1/genes/compare?symbols=BRCA1,TP53` |
 | `get_gene_neighbors` | `GET /api/v1/genes/{id}/neighbors` |
 | `export_gene_subgraph` | `GET /api/v1/export/subgraph?gene_id=` |
-| `investigate_gene_symbol` | search + detail + ranked diseases + neighbors |
+| `build_target_dossier` | Full markdown handoff: detail + diseases + neighbors + stats + provenance + UI link |
+| `investigate_gene_symbol` | search + detail + ranked diseases + neighbors (lighter than dossier) |
 
 ## MCP resources
 
 | URI | Description |
 |-----|-------------|
 | `bioinsight://schema` | Graph model + example Cypher |
-| `bioinsight://provenance` | Dataset scope and limitations |
+| `bioinsight://meta` | Live data version, sources, disclaimer (`GET /api/v1/meta`) |
+| `bioinsight://provenance` | Dataset scope and link to PROVENANCE.md |
 | `bioinsight://stats` | Live counts from the running API |
 | `bioinsight://ecosystem` | All browser/API URLs (BioInsight, Neo4j, KG RAG, MCP) |
 
@@ -185,6 +187,7 @@ Connect to `http://localhost:1337/sse`, then try `compare_genes` with `symbols=B
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `BIOINSIGHT_API_BASE_URL` | `http://localhost:8000/api/v1` | FastAPI base URL |
+| `BIOINSIGHT_WEB_UI_URL` | `http://localhost:8080` | Deep links in markdown dossiers |
 | `MCP_SERVER_PORT` | `1337` | HTTP port for SSE |
 | `OPENAI_API_KEY` | — | Required (OpenAI or OpenRouter) |
 | `OPENAI_BASE_URL` | `https://openrouter.ai` | OpenAI-compatible API base |
@@ -228,6 +231,10 @@ docker run --rm -p 1337:1337 \
   embabel-mcp
 ```
 
+## Use cases
+
+See [docs/USE_CASES.md](docs/USE_CASES.md) for worked examples (`build_target_dossier`, disease targets, provenance).
+
 ## Development
 
 ```bash
@@ -238,6 +245,7 @@ mvn spring-boot:run
 ## Related repos
 
 - [bioinsight-graph](https://github.com/LordKay-sudo/bioinsight-graph) — Neo4j graph, FastAPI, React UI
+- [Portfolio roadmap](https://github.com/LordKay-sudo/bioinsight-graph/blob/main/docs/PORTFOLIO_ROADMAP.md) — generic improvement plan across all three repos (data, IDs, provenance, UI, MCP)
 - [kg-rag-demo](https://github.com/LordKay-sudo/kg-rag-demo) — optional document RAG (`KG_RAG_ENABLED=true`)
 
 ## License
