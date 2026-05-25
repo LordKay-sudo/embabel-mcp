@@ -23,6 +23,12 @@ bioinsight:
   web-ui-base-url: ${BIOINSIGHT_WEB_UI_URL:http://localhost:8080}
   hitl:
     enabled: ${BIOINSIGHT_HITL_ENABLED:false}
+  mcp:
+    # minimal | standard (default) | full — fewer tools = smaller MCP context at session start
+    tool-profile: ${BIOINSIGHT_MCP_TOOL_PROFILE:standard}
+    # ~4k tokens per tool response; keeps long chats under ~120k total if used sparingly
+    max-response-chars: ${BIOINSIGHT_MCP_MAX_RESPONSE_CHARS:16000}
+    default-disease-limit: ${BIOINSIGHT_MCP_DEFAULT_DISEASE_LIMIT:10}
 
 kg-rag:
   enabled: ${KG_RAG_ENABLED:false}

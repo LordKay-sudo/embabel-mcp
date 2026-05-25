@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springaicommunity.mcp.annotation.McpArg;
 import org.springaicommunity.mcp.annotation.McpPrompt;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.stereotype.Component;
 
 import io.modelcontextprotocol.spec.McpSchema.GetPromptResult;
@@ -15,6 +16,7 @@ import io.modelcontextprotocol.spec.McpSchema.TextContent;
  * MCP prompt templates for common biomedical graph workflows.
  */
 @Component
+@ConditionalOnExpression("'${bioinsight.mcp.tool-profile:standard}' != 'minimal'")
 public class BioInsightMcpPrompts {
 
     @McpPrompt(
@@ -26,7 +28,7 @@ public class BioInsightMcpPrompts {
                 """
                 You have access to BioInsight Graph MCP tools (demo Open Targets–style data).
 
-                1. Call `investigate_gene_symbol` with symbol="%s" (format=markdown).
+                1. Call `build_target_dossier` with symbol="%s" (format=markdown).
                 2. Summarize the strongest disease associations and note association scores.
                 3. State clearly that this is demo data, not clinical advice.
                 """

@@ -1,6 +1,7 @@
 package com.lordkay.embabel.mcp.resources;
 
 import org.springaicommunity.mcp.annotation.McpResource;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.stereotype.Component;
 
 import com.lordkay.embabel.mcp.client.BioInsightApiClient;
@@ -12,39 +13,13 @@ import com.lordkay.embabel.mcp.format.BioInsightMarkdown;
 @Component
 public class BioInsightMcpResources {
 
-    private static final String SCHEMA = """
-            # BioInsight Graph schema
+    private static final String SCHEMA =
+            """
+            # BioInsight schema (summary)
 
-            ## Nodes
-            - `(:Gene {id, symbol, name})`
-            - `(:Disease {id, name})`
-            - `(:Protein {id, name})`
-
-            ## Relationships
-            - `(:Gene)-[:ASSOCIATED_WITH {score, source}]->(:Disease)`
-            - `(:Protein)-[:ENCODED_BY]->(:Gene)`
-
-            ## Example Cypher
-            ```cypher
-            MATCH (g:Gene {symbol: 'BRCA1'})-[r:ASSOCIATED_WITH]->(d:Disease)
-            RETURN g.symbol, d.name, r.score
-            ORDER BY r.score DESC
-            LIMIT 10
-            ```
-            """;
-
-    private static final String ECOSYSTEM = """
-            # LordKay research platform (local URLs)
-
-            | Application | Browser | API | Role |
-            |-------------|---------|-----|------|
-            | **BioInsight Graph** | http://localhost:8080 | http://localhost:8000/docs | Structured disease–target graph |
-            | **Neo4j (BioInsight)** | http://localhost:7474 | bolt://localhost:7687 | Graph storage |
-            | **KG RAG Demo** | http://localhost:5173 (dev) | http://localhost:8001/docs | Document RAG + citations |
-            | **Neo4j (KG RAG)** | http://localhost:7475 | bolt://localhost:7688 | Separate graph (no port clash) |
-            | **embabel-mcp** | — | http://localhost:1337/sse | MCP tools + agents for Cursor |
-
-            Enable KG RAG bridge: `KG_RAG_ENABLED=true` and run kg-rag-demo API on port 8001.
+            Nodes: Gene, Disease, Protein. Edge: ASSOCIATED_WITH {score}, ENCODED_BY.
+            Prefer MCP tool `build_target_dossier` over loading full subgraph JSON.
+            Full model: bioinsight-graph repo / docs/ARCHITECTURE.md
             """;
 
     private static final String PROVENANCE = """
@@ -100,6 +75,19 @@ public class BioInsightMcpResources {
         String json = api.get("/stats");
         return "# Live graph statistics\n\n```json\n" + json + "\n```\n";
     }
+}
+
+@Component
+@ConditionalOnExpression("'${bioinsight.mcp.tool-profile:standard}' != 'minimal'")
+class BioInsightMcpExtendedResources {
+
+    private static final String ECOSYSTEM =
+            """
+            # Platform URLs (local)
+
+            BioInsight UI :8080 · API :8000 · MCP :1337/sse · KG RAG optional :8001
+            See bioinsight-graph docs/ARCHITECTURE.md
+            """;
 
     @McpResource(
             uri = "bioinsight://human-in-the-loop",

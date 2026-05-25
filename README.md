@@ -182,12 +182,24 @@ npx @modelcontextprotocol/inspector
 
 Connect to `http://localhost:1337/sse`, then try `compare_genes` with `symbols=BRCA1,TP53` or open prompt `summarize-gene-targets`.
 
+## Context budget
+
+Large MCP servers inflate the IDE context window and increase hallucinations past ~120k tokens. This repo supports:
+
+- **`BIOINSIGHT_MCP_TOOL_PROFILE`** — `minimal` (5 tools), `standard` (default), or `full`
+- **`BIOINSIGHT_MCP_MAX_RESPONSE_CHARS`** — per-tool response cap (default 16000)
+- Prefer **`build_target_dossier`** over many granular `get_*` calls
+
+See [docs/CONTEXT_BUDGET.md](docs/CONTEXT_BUDGET.md).
+
 ## Configuration
 
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `BIOINSIGHT_API_BASE_URL` | `http://localhost:8000/api/v1` | FastAPI base URL |
 | `BIOINSIGHT_WEB_UI_URL` | `http://localhost:8080` | Deep links in markdown dossiers |
+| `BIOINSIGHT_MCP_TOOL_PROFILE` | `standard` | `minimal` \| `standard` \| `full` — tools exposed at startup |
+| `BIOINSIGHT_MCP_MAX_RESPONSE_CHARS` | `16000` | Truncate any single tool response beyond this |
 | `MCP_SERVER_PORT` | `1337` | HTTP port for SSE |
 | `OPENAI_API_KEY` | — | Required (OpenAI or OpenRouter) |
 | `OPENAI_BASE_URL` | `https://openrouter.ai` | OpenAI-compatible API base |
