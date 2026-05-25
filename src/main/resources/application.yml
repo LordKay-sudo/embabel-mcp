@@ -26,8 +26,11 @@ bioinsight:
   mcp:
     # minimal | standard (default) | full — fewer tools = smaller MCP context at session start
     tool-profile: ${BIOINSIGHT_MCP_TOOL_PROFILE:standard}
-    # ~4k tokens per tool response; keeps long chats under ~120k total if used sparingly
-    max-response-chars: ${BIOINSIGHT_MCP_MAX_RESPONSE_CHARS:16000}
+    # off = full responses (default). warn = append size notice. truncate = opt-in hard cap only
+    compact-mode: ${BIOINSIGHT_MCP_COMPACT_MODE:off}
+    max-response-chars: ${BIOINSIGHT_MCP_MAX_RESPONSE_CHARS:0}
+    warn-response-chars: ${BIOINSIGHT_MCP_WARN_RESPONSE_CHARS:12000}
+    exempt-workflow-tools-from-truncation: true
     default-disease-limit: ${BIOINSIGHT_MCP_DEFAULT_DISEASE_LIMIT:10}
 
 kg-rag:

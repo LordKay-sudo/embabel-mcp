@@ -2,6 +2,8 @@
 
 Worked examples for **embabel-mcp** against a running [BioInsight Graph](https://github.com/LordKay-sudo/bioinsight-graph) API. Default response format is **markdown**.
 
+**Response policy:** Full dossiers are never truncated (`BIOINSIGHT_MCP_COMPACT_MODE=off` by default). See [RESPONSE_POLICY.md](./RESPONSE_POLICY.md) and [CONTEXT_BUDGET.md](./CONTEXT_BUDGET.md).
+
 ## 1. Target dossier (recommended handoff)
 
 **Tool:** `build_target_dossier`  
@@ -10,12 +12,13 @@ Worked examples for **embabel-mcp** against a running [BioInsight Graph](https:/
 
 Use when you need one auditable report for a symbol.
 
-## 2. Quick investigation
+## 2. Quick investigation (full profile only)
 
 **Tool:** `investigate_gene_symbol`  
 **Input:** `symbol=TP53`  
+**Requires:** `BIOINSIGHT_MCP_TOOL_PROFILE=full`
 
-Same graph evidence as the dossier without the stats section — fewer tokens.
+Same graph evidence as the dossier without the stats section. Prefer `build_target_dossier` in `minimal` or `standard` profiles.
 
 ## 3. Disease-centric targets
 
@@ -40,6 +43,16 @@ Confirms `data_version`, disclaimer, and correlative-not-causal scope before tru
 
 **Prompt:** `review-gene-report` after `research_gene` or `build_target_dossier`  
 **UI:** Verify http://localhost:8080
+
+## 7. Tool profiles and context
+
+| Profile | When to use |
+|---------|-------------|
+| `minimal` | Daily Cursor use — smallest tool list at connect |
+| `standard` | Default — adds entity `get_*` and `compare_genes` |
+| `full` | Debugging — adds neighbors, subgraph export, `investigate_gene_symbol` |
+
+Set `BIOINSIGHT_MCP_TOOL_PROFILE=minimal` in `.env`. Do **not** use `BIOINSIGHT_MCP_COMPACT_MODE=truncate` for target–disease work.
 
 ## Optional: literature (third repo)
 

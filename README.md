@@ -184,13 +184,13 @@ Connect to `http://localhost:1337/sse`, then try `compare_genes` with `symbols=B
 
 ## Context budget
 
-Large MCP servers inflate the IDE context window and increase hallucinations past ~120k tokens. This repo supports:
+Large MCP servers inflate the IDE context window; the **120k-token limit is on the host model**, not per tool. This repo defaults to **full-fidelity responses** (no truncation):
 
-- **`BIOINSIGHT_MCP_TOOL_PROFILE`** — `minimal` (5 tools), `standard` (default), or `full`
-- **`BIOINSIGHT_MCP_MAX_RESPONSE_CHARS`** — per-tool response cap (default 16000)
-- Prefer **`build_target_dossier`** over many granular `get_*` calls
+- **`BIOINSIGHT_MCP_TOOL_PROFILE`** — `minimal` / `standard` / `full` (main lever)
+- **`BIOINSIGHT_MCP_COMPACT_MODE`** — `off` (default), `warn`, or opt-in `truncate`
+- Workflow dossiers are **never truncated**; optional advisory footer only
 
-See [docs/CONTEXT_BUDGET.md](docs/CONTEXT_BUDGET.md).
+See [docs/CONTEXT_BUDGET.md](docs/CONTEXT_BUDGET.md) and [docs/RESPONSE_POLICY.md](docs/RESPONSE_POLICY.md). MCP resource: `bioinsight://context-policy`.
 
 ## Configuration
 
@@ -199,7 +199,9 @@ See [docs/CONTEXT_BUDGET.md](docs/CONTEXT_BUDGET.md).
 | `BIOINSIGHT_API_BASE_URL` | `http://localhost:8000/api/v1` | FastAPI base URL |
 | `BIOINSIGHT_WEB_UI_URL` | `http://localhost:8080` | Deep links in markdown dossiers |
 | `BIOINSIGHT_MCP_TOOL_PROFILE` | `standard` | `minimal` \| `standard` \| `full` — tools exposed at startup |
-| `BIOINSIGHT_MCP_MAX_RESPONSE_CHARS` | `16000` | Truncate any single tool response beyond this |
+| `BIOINSIGHT_MCP_COMPACT_MODE` | `off` | `off` \| `warn` \| `truncate` (truncate not recommended) |
+| `BIOINSIGHT_MCP_MAX_RESPONSE_CHARS` | `0` | Hard cap only when `compact-mode=truncate` |
+| `BIOINSIGHT_MCP_WARN_RESPONSE_CHARS` | `12000` | Advisory footer threshold (chars); does not cut content |
 | `MCP_SERVER_PORT` | `1337` | HTTP port for SSE |
 | `OPENAI_API_KEY` | — | Required (OpenAI or OpenRouter) |
 | `OPENAI_BASE_URL` | `https://openrouter.ai` | OpenAI-compatible API base |
@@ -243,9 +245,14 @@ docker run --rm -p 1337:1337 \
   embabel-mcp
 ```
 
-## Use cases
+## Documentation
 
-See [docs/USE_CASES.md](docs/USE_CASES.md) for worked examples (`build_target_dossier`, disease targets, provenance).
+| Doc | Topic |
+|-----|--------|
+| [docs/USE_CASES.md](docs/USE_CASES.md) | Worked examples |
+| [docs/RESPONSE_POLICY.md](docs/RESPONSE_POLICY.md) | When compaction runs; workflow exemption; config |
+| [docs/CONTEXT_BUDGET.md](docs/CONTEXT_BUDGET.md) | Characters vs tokens; staying under host 120k |
+| [docs/HUMAN_IN_THE_LOOP.md](docs/HUMAN_IN_THE_LOOP.md) | Review workflows |
 
 ## Development
 

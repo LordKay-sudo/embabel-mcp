@@ -75,6 +75,25 @@ public class BioInsightMcpResources {
         String json = api.get("/stats");
         return "# Live graph statistics\n\n```json\n" + json + "\n```\n";
     }
+
+    @McpResource(
+            uri = "bioinsight://context-policy",
+            name = "Response and context policy",
+            description =
+                    "Full-fidelity tool responses; compact modes; tool profiles — see docs/RESPONSE_POLICY.md")
+    public String contextPolicy() {
+        return """
+                # MCP response policy (summary)
+
+                - Tool output is assembled fully, then `finish()` runs once (never mid-request).
+                - Default: `compact-mode=off` — no truncation of biomedical evidence.
+                - `build_target_dossier` / `investigate_gene_symbol` are never truncated.
+                - `tool-profile`: minimal | standard | full — reduces tools at MCP connect.
+                - 120k tokens is the host model budget; char limits here are not token limits.
+
+                Docs: https://github.com/LordKay-sudo/embabel-mcp/blob/main/docs/RESPONSE_POLICY.md
+                """;
+    }
 }
 
 @Component

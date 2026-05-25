@@ -35,7 +35,7 @@ abstract class BioInsightToolSupport {
         } else {
             out = json;
         }
-        return McpResponseCompactor.compact(out, context.getMaxResponseChars());
+        return McpResponseCompactor.finish(out, context, McpResponseCompactor.ResponseKind.standard);
     }
 
     protected String markdownDossier(
@@ -53,7 +53,7 @@ abstract class BioInsightToolSupport {
             sb.append(BioInsightMarkdown.format(stats)).append("\n");
         }
         String body = sb.append(BioInsightProvenance.footer(api, properties.getWebUiBaseUrl(), geneId)).toString();
-        return McpResponseCompactor.compact(body, context.getMaxResponseChars());
+        return McpResponseCompactor.finish(body, context, McpResponseCompactor.ResponseKind.workflow);
     }
 
     protected String resolveGeneId(String symbol) {

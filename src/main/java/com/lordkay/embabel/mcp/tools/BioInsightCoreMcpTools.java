@@ -79,6 +79,6 @@ public class BioInsightCoreMcpTools extends BioInsightToolSupport {
                 {"symbol":"%s","gene_id":"%s","detail":%s,"diseases":%s,"neighbors":%s,"stats":%s}
                 """
                         .formatted(symbol, geneId, detail, diseases, neighbors, stats);
-        return McpResponseCompactor.compact(payload, context.getMaxResponseChars());
+        return McpResponseCompactor.finish(payload, context, McpResponseCompactor.ResponseKind.workflow);
     }
 }
