@@ -13,6 +13,15 @@ Coupling rule: **HTTP to BioInsight only** — no monorepo requirement.
 
 Agent tooling for the BioInsight product — not a second app. Value = **planned retrieval**, **provenance in every dossier**, **full-fidelity responses**, optional literature bridge. Move from static “step 1,2,3” prompts toward **adaptive investigation** (PRoH-style *process*, not their hypergraph store).
 
+### Dual-channel retrieval (UniAI / production GraphRAG pattern)
+
+| Channel | Source | When |
+|---------|--------|------|
+| **A — Local structured** | BioInsight API / `build_target_dossier` | Always first — scores, IDs, evidence |
+| **B — Document** | kg-rag `ask` (cited chunks) | Only if channel A sparse, or user asks mechanism/literature (**M8**) |
+
+Do not add a third “community summary” channel unless BioInsight graph is large enough to justify it.
+
 ---
 
 ## Shipped (baseline)
@@ -46,7 +55,7 @@ Agent tooling for the BioInsight product — not a second app. Value = **planned
 | ID | Task | Done when |
 |----|------|-----------|
 | **M7** | **`export_provenance_bundle`** — JSON: meta, queries run, links, timestamps | Auditable export for HITL |
-| **M8** | Refine **`graph-and-literature`**: graph first; call kg-rag **only** if sparse associations or user asks mechanism/lit | Conditional steps in prompt |
+| **M8** | **`graph-and-literature` dual-channel**: channel A = dossier/API; channel B = kg-rag **only** if sparse associations, missing evidence types, or explicit literature question | Prompt + USE_CASES document stop rules |
 | **M9** | MCP resource **`bioinsight://investigation-playbook`** — when to use which tool/profile | One-page host guidance |
 | **M10** | README GIF: Cursor → dossier → BioInsight UI verify | Matches HITL story |
 
@@ -80,6 +89,14 @@ Never use `compact-mode=truncate` for target–disease work. See [RESPONSE_POLIC
 - Unbounded wrappers to EBI Search / ChEMBL / sequence APIs (unless scoped later)
 - Claiming “Knowledge Hypergraph RAG” without hypergraph backend
 - Truncating `build_target_dossier` / investigate outputs
+- Raw Neo4j Cypher MCP as default path (prefer stable `/api/v1` tools)
+- Mandatory LangChain GraphRAG layer
+
+## References (optional reading)
+
+- [UniAI-GraphRAG — dual-channel + ontology-guided extract](https://arxiv.org/html/2603.25152v3) — fusion pattern for **M8**  
+- [ML6 biomedical KG + Neo4j](https://blog.ml6.eu/accelerating-biomedical-knowledge-graph-construction-with-llms-db429952f4b2) — construction context for kg-rag, not BioInsight ingest  
+- [Towards AI — Neo4j + LangChain GraphRAG](https://pub.towardsai.net/graphrag-explained-building-knowledge-grounded-llm-systems-with-neo4j-and-langchain-017a1820763e)
 
 ---
 
