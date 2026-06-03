@@ -249,10 +249,12 @@ docker run --rm -p 1337:1337 \
 
 | Doc | Topic |
 |-----|--------|
+| [docs/ROADMAP.md](docs/ROADMAP.md) | Implementation tasks (M1–M13) |
 | [docs/USE_CASES.md](docs/USE_CASES.md) | Worked examples |
 | [docs/RESPONSE_POLICY.md](docs/RESPONSE_POLICY.md) | When compaction runs; workflow exemption; config |
 | [docs/CONTEXT_BUDGET.md](docs/CONTEXT_BUDGET.md) | Characters vs tokens; staying under host 120k |
 | [docs/HUMAN_IN_THE_LOOP.md](docs/HUMAN_IN_THE_LOOP.md) | Review workflows |
+| [ECOSYSTEM_CONTEXT](https://github.com/LordKay-sudo/bioinsight-graph/blob/main/docs/ECOSYSTEM_CONTEXT.md) | Compact handoff for new agent sessions |
 
 ## Development
 
@@ -264,7 +266,7 @@ mvn spring-boot:run
 ## Related repos
 
 - [bioinsight-graph](https://github.com/LordKay-sudo/bioinsight-graph) — Neo4j graph, FastAPI, React UI
-- [Portfolio roadmap](https://github.com/LordKay-sudo/bioinsight-graph/blob/main/docs/PORTFOLIO_ROADMAP.md) — generic improvement plan across all three repos (data, IDs, provenance, UI, MCP)
+- [Portfolio roadmap](https://github.com/LordKay-sudo/bioinsight-graph/blob/main/docs/PORTFOLIO_ROADMAP.md) — cross-repo plan · [kg-rag ROADMAP](https://github.com/LordKay-sudo/kg-rag-demo/blob/main/docs/ROADMAP.md)
 - [kg-rag-demo](https://github.com/LordKay-sudo/kg-rag-demo) — optional document RAG (`KG_RAG_ENABLED=true`)
 
 ## License
