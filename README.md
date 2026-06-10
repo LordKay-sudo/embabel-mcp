@@ -71,6 +71,9 @@ Most tools accept optional `format`: **`markdown`** (default) or **`json`**.
 | `compare_genes` | `GET /api/v1/genes/compare?symbols=BRCA1,TP53` |
 | `get_gene_neighbors` | `GET /api/v1/genes/{id}/neighbors` |
 | `export_gene_subgraph` | `GET /api/v1/export/subgraph?gene_id=` |
+| `plan_investigation` | JSON plan: intent, entities, tool sequence, stop rules (call before dossier) |
+| `resolve_identifier` | Symbol or disease name → canonical id + ambiguity notes (standard+) |
+| `get_target_evidence` | Gene–disease evidence breakdown or association scores (standard+) |
 | `build_target_dossier` | Full markdown handoff: detail + diseases + neighbors + stats + provenance + UI link |
 | `investigate_gene_symbol` | search + detail + ranked diseases + neighbors (lighter than dossier) |
 
@@ -83,15 +86,17 @@ Most tools accept optional `format`: **`markdown`** (default) or **`json`**.
 | `bioinsight://provenance` | Dataset scope and link to PROVENANCE.md |
 | `bioinsight://stats` | Live counts from the running API |
 | `bioinsight://ecosystem` | All browser/API URLs (BioInsight, Neo4j, KG RAG, MCP) |
+| `bioinsight://investigation-playbook` | Intent routing — which tool for gene vs disease vs compare vs literature |
 
 ## MCP prompts
 
 | Prompt | Use case |
 |--------|----------|
-| `summarize-gene-targets` | Investigate a symbol and summarize associations |
-| `compare-gene-pair` | Compare two genes and overlapping diseases |
-| `top-targets-for-disease` | Find ranked targets for a disease name |
-| `graph-and-literature` | Graph evidence + `kg_rag_ask` when enabled |
+| `adaptive-gene-investigation` | Plan → resolve → branch (ambiguous symbol / sparse evidence) |
+| `summarize-gene-targets` | Gene-first: plan, resolve, dossier, summarize |
+| `compare-gene-pair` | Compare path: plan, resolve both, `compare_genes` |
+| `top-targets-for-disease` | Disease-first: plan, resolve disease, `get_disease_genes` |
+| `graph-and-literature` | Dual-channel: dossier first; `kg_rag_ask` only if sparse or literature question |
 | `review-gene-report` | **HITL:** human verifies http://localhost:8080 before trusting report |
 
 ## Human-in-the-loop

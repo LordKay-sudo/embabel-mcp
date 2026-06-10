@@ -57,6 +57,15 @@ public final class BioInsightMarkdown {
             if (root.has("detail") && root.has("neighbors")) {
                 return formatInvestigation(root);
             }
+            if (root.has("intent") && root.has("tool_sequence")) {
+                return formatInvestigationPlan(root);
+            }
+            if (root.has("canonical_id") && root.has("entity_type")) {
+                return formatIdentifierResolution(root);
+            }
+            if (root.has("associations") && root.has("evidence_breakdown_available")) {
+                return formatTargetEvidence(root);
+            }
             return "```json\n" + MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(root) + "\n```";
         } catch (Exception e) {
             return json;
@@ -253,6 +262,101 @@ public final class BioInsightMarkdown {
                 + BioInsightMarkdown.format(n.get("detail").toString())
                 + "\n"
                 + BioInsightMarkdown.format(n.get("neighbors").toString());
+    }
+
+    private static String formatInvestigationPlan(JsonNode n) {
+        StringBuilder sb = new StringBuilder("## Investigation plan\n\n");
+        sb.append("- **Intent:** `").append(n.get("intent").asText()).append("`\n");
+        sb.append("- **Question:** ").append(cell(n, "question")).append("\n");
+        if (n.has("routing_note")) {
+            sb.append("- **Routing:** ").append(n.get("routing_note").asText()).append("\n");
+        }
+        JsonNode entities = n.get("entities");
+        if (entities != null) {
+            sb.append("\n### Entities\n\n");
+            if (entities.has("gene_symbols") && entities.get("gene_symbols").size() > 0) {
+                sb.append("- **Gene symbols:** ");
+                for (JsonNode g : entities.get("gene_symbols")) {
+                    sb.append("`").append(g.asText()).append("` ");
+                }
+                sb.append("\n");
+            }
+            if (entities.has("disease_query")) {
+                sb.append("- **Disease query:** ").append(entities.get("disease_query").asText()).append("\n");
+            }
+        }
+        sb.append("\n### Tool sequence\n\n");
+        for (JsonNode step : n.get("tool_sequence")) {
+            sb.append("1. `").append(step.asText()).append("`\n");
+        }
+        sb.append("\n### Stop rules\n\n");
+        for (JsonNode rule : n.get("stop_rules")) {
+            sb.append("- ").append(rule.asText()).append("\n");
+        }
+        return sb.toString();
+    }
+
+    private static String formatIdentifierResolution(JsonNode n) {
+        StringBuilder sb = new StringBuilder("## Identifier resolution\n\n");
+        sb.append("- **Entity:** ").append(cell(n, "entity_type")).append("\n");
+        sb.append("- **Canonical ID:** `").append(cell(n, "canonical_id")).append("`\n");
+        sb.append("- **ID system:** ").append(cell(n, "id_system")).append("\n");
+        if (n.has("symbol")) {
+            sb.append("- **Symbol:** ").append(cell(n, "symbol")).append("\n");
+        }
+        if (n.has("name")) {
+            sb.append("- **Name:** ").append(cell(n, "name")).append("\n");
+        }
+        if (n.has("ambiguous") && n.get("ambiguous").asBoolean()) {
+            sb.append("\n**Ambiguous** — confirm with the user before proceeding.\n\n");
+            if (n.has("candidates")) {
+                sb.append("| Label | ID |\n|-------|----|\n");
+                for (JsonNode c : n.get("candidates")) {
+                    sb.append("| ")
+                            .append(cell(c, "label"))
+                            .append(" | `")
+                            .append(cell(c, "id"))
+                            .append("` |\n");
+                }
+            }
+        }
+        if (n.has("resolution_note")) {
+            sb.append("\n_").append(n.get("resolution_note").asText()).append("_\n");
+        }
+        return sb.toString();
+    }
+
+    private static String formatTargetEvidence(JsonNode n) {
+        StringBuilder sb = new StringBuilder("## Target evidence");
+        if (n.has("symbol") && !n.get("symbol").asText().isBlank()) {
+            sb.append(": **").append(n.get("symbol").asText()).append("**");
+        }
+        sb.append("\n\n");
+        if (n.has("note")) {
+            sb.append("_").append(n.get("note").asText()).append("_\n\n");
+        }
+        sb.append("| Disease | Score | Evidence types |\n|---------|------:|----------------|\n");
+        for (JsonNode a : n.get("associations")) {
+            String types = "association_score";
+            if (a.has("evidence") && a.get("evidence").isArray() && a.get("evidence").size() > 0) {
+                StringBuilder tb = new StringBuilder();
+                for (JsonNode e : a.get("evidence")) {
+                    if (!tb.isEmpty()) {
+                        tb.append(", ");
+                    }
+                    tb.append(cell(e, "type"));
+                }
+                types = tb.toString();
+            }
+            sb.append("| ")
+                    .append(cell(a, "disease_name"))
+                    .append(" | ")
+                    .append(String.format("%.3f", a.get("score").asDouble()))
+                    .append(" | ")
+                    .append(types)
+                    .append(" |\n");
+        }
+        return sb.toString();
     }
 
     private static String findNodeName(JsonNode nodes, String id) {

@@ -34,19 +34,20 @@ Do not add a third “community summary” channel unless BioInsight graph is la
 | [RESPONSE_POLICY.md](./RESPONSE_POLICY.md), [CONTEXT_BUDGET.md](./CONTEXT_BUDGET.md), `bioinsight://context-policy` |
 | MCP prompts: summarize, compare, disease targets, HITL, graph-and-literature |
 | `GeneResearchAgent` / `research_gene` (Embabel) |
+| **M1–M6** — `plan_investigation`, intent-routed prompts, `resolve_identifier`, `get_target_evidence`, meta source URLs in footers, `adaptive-gene-investigation`, `bioinsight://investigation-playbook` |
 
 ---
 
-## P0 — Do next (blocked partly on BioInsight 1.x)
+## P0 — Done (M1–M6)
 
-| ID | Task | Depends on | Done when |
-|----|------|------------|-----------|
-| **M1** | Tool/prompt: **`plan_investigation`** — JSON plan (entities, intent, tool sequence, stop rules) before dossier | — | Documented in USE_CASES; host can call plan then tools |
-| **M2** | **Route by intent** in prompts: gene-first vs disease-first vs compare vs literature-needed | — | No one-size “always dossier” for every question |
-| **M3** | **`resolve_identifier`** (symbol → ENSG, disease name → EFO/MONDO) | BioInsight 2.x IDs | Returns canonical id + ambiguity notes |
-| **M4** | **`get_target_evidence`** — thin wrapper over API evidence breakdown | BioInsight 1.4 | Returns typed evidence list, not one score |
-| **M5** | Dossier footer: **`data_version`** + canonical URLs from `/meta` | BioInsight 0.2 ✓ | Every workflow response cites version |
-| **M6** | Prompt **`adaptive-gene-investigation`**: execute plan step; if missing ENSG/ambiguous disease → suggest next tool | M1, M3 | Described in USE_CASES |
+| ID | Task | Status |
+|----|------|--------|
+| **M1** | **`plan_investigation`** — JSON plan before dossier | ✓ tool + USE_CASES |
+| **M2** | **Route by intent** in prompts | ✓ gene / disease / compare / literature paths |
+| **M3** | **`resolve_identifier`** | ✓ search-based; full ontology when BioInsight 2.x ships |
+| **M4** | **`get_target_evidence`** | ✓ uses `/evidence` when present; else association scores |
+| **M5** | Dossier footer: **`data_version`** + source URLs from `/meta` | ✓ |
+| **M6** | **`adaptive-gene-investigation`** prompt | ✓ plan → resolve → branch |
 
 ---
 
@@ -56,7 +57,7 @@ Do not add a third “community summary” channel unless BioInsight graph is la
 |----|------|-----------|
 | **M7** | **`export_provenance_bundle`** — JSON: meta, queries run, links, timestamps | Auditable export for HITL |
 | **M8** | **`graph-and-literature` dual-channel**: channel A = dossier/API; channel B = kg-rag **only** if sparse associations, missing evidence types, or explicit literature question | Prompt + USE_CASES document stop rules |
-| **M9** | MCP resource **`bioinsight://investigation-playbook`** — when to use which tool/profile | One-page host guidance |
+| **M9** | MCP resource **`bioinsight://investigation-playbook`** — when to use which tool/profile | ✓ shipped with M2 |
 | **M10** | README GIF: Cursor → dossier → BioInsight UI verify | Matches HITL story |
 
 ---
@@ -102,11 +103,9 @@ Never use `compact-mode=truncate` for target–disease work. See [RESPONSE_POLIC
 
 ## Task pick order
 
-1. **M5** (meta in footers — quick)  
-2. **M1, M2, M6** (planning story — docs/prompts first, code optional)  
-3. **M3, M4** after BioInsight **1.4 / 2.x**  
-4. **M7, M8** (provenance + conditional RAG)  
-5. **M10–M13**
+1. **M7, M8** (provenance bundle + tighten dual-channel in host workflows)  
+2. **M10–M13** (demo GIF, fixtures, ops logging, tutorial prompt)  
+3. Revisit **M3/M4** when BioInsight **1.4 / 2.x** adds typed evidence and ontology resolve API
 
 ---
 

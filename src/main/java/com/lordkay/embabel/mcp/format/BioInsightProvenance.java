@@ -30,6 +30,18 @@ public final class BioInsightProvenance {
                 if (m.has("associations_are_correlative") && m.get("associations_are_correlative").asBoolean()) {
                     sb.append("- **Note:** associations are correlative, not causal\n");
                 }
+                if (m.has("sources") && m.get("sources").isArray() && !m.get("sources").isEmpty()) {
+                    sb.append("- **Sources:**\n");
+                    for (JsonNode s : m.get("sources")) {
+                        String name = text(s, "name");
+                        String url = text(s, "url");
+                        if (!url.equals("—")) {
+                            sb.append("  - [").append(name).append("](").append(url).append(")\n");
+                        } else {
+                            sb.append("  - ").append(name).append("\n");
+                        }
+                    }
+                }
                 sb.append("- **Disclaimer:** ").append(text(m, "disclaimer")).append("\n");
             } catch (Exception ignored) {
                 sb.append("- ").append(FALLBACK_DISCLAIMER).append("\n");

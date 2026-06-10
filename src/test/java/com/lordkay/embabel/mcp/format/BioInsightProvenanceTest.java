@@ -11,11 +11,13 @@ class BioInsightProvenanceTest {
         String meta =
                 """
                 {"data_version":"demo-v1","release_date":"2024-06-01",\
-                "associations_are_correlative":true,"disclaimer":"Not for clinical use."}
+                "associations_are_correlative":true,"disclaimer":"Not for clinical use.",\
+                "sources":[{"name":"Open Targets","url":"https://platform.opentargets.org/","license":"CC0"}]}
                 """;
         String footer = BioInsightProvenance.footerFromMetaJson(meta, "http://localhost:8080", "ENSG1");
         assertTrue(footer.contains("demo-v1"));
         assertTrue(footer.contains("correlative"));
+        assertTrue(footer.contains("https://platform.opentargets.org/"));
         assertTrue(footer.contains("http://localhost:8080/gene/ENSG1"));
     }
 

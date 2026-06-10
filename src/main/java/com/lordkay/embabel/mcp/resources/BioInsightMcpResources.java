@@ -133,4 +133,31 @@ class BioInsightMcpExtendedResources {
     public String ecosystem() {
         return ECOSYSTEM;
     }
+
+    @McpResource(
+            uri = "bioinsight://investigation-playbook",
+            name = "Investigation playbook",
+            description = "Intent routing: which tool to use for gene, disease, compare, and literature questions")
+    public String investigationPlaybook() {
+        return """
+                # Investigation playbook
+
+                Always start with `plan_investigation` for non-trivial questions.
+
+                | Intent | Primary tools | Avoid |
+                |--------|---------------|-------|
+                | Gene / target | resolve_identifier → build_target_dossier | get_disease_genes first |
+                | Disease / targets | resolve_identifier(disease) → get_disease_genes | build_target_dossier |
+                | Compare 2+ genes | resolve each → compare_genes | Multiple dossiers unless asked |
+                | Literature | dossier → kg_rag_ask (if sparse or explicit) | kg_rag before graph |
+
+                **Ambiguity:** if resolve_identifier returns candidates, stop and ask the user.
+
+                **Evidence:** `get_target_evidence` after dossier for typed breakdown (full when BioInsight 1.4 ships).
+
+                **Profiles:** minimal = plan + dossier + search; standard adds resolve + evidence; full adds neighbors/subgraph.
+
+                Prompt: `adaptive-gene-investigation` for plan → resolve → branch execution.
+                """;
+    }
 }
