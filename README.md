@@ -74,6 +74,8 @@ Most tools accept optional `format`: **`markdown`** (default) or **`json`**.
 | `plan_investigation` | JSON plan: intent, entities, tool sequence, stop rules (call before dossier) |
 | `resolve_identifier` | Symbol or disease name → canonical id + ambiguity notes (standard+) |
 | `get_target_evidence` | Gene–disease evidence breakdown or association scores (standard+) |
+| `get_gene_external_links` | Ensembl, Open Targets, UniProt deep links (standard+) |
+| `export_provenance_bundle` | M7 audit JSON: meta, queries, links, evidence sample (standard+) |
 | `build_target_dossier` | Full markdown handoff: detail + diseases + neighbors + stats + provenance + UI link |
 | `investigate_gene_symbol` | search + detail + ranked diseases + neighbors (lighter than dossier) |
 

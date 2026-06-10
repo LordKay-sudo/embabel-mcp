@@ -53,20 +53,21 @@ Do not add a third “community summary” channel unless BioInsight graph is la
 
 ## P1 — Provenance + fusion
 
-| ID | Task | Done when |
-|----|------|-----------|
-| **M7** | **`export_provenance_bundle`** — JSON: meta, queries run, links, timestamps | Auditable export for HITL |
-| **M8** | **`graph-and-literature` dual-channel**: channel A = dossier/API; channel B = kg-rag **only** if sparse associations, missing evidence types, or explicit literature question | Prompt + USE_CASES document stop rules |
-| **M9** | MCP resource **`bioinsight://investigation-playbook`** — when to use which tool/profile | ✓ shipped with M2 |
-| **M10** | README GIF: Cursor → dossier → BioInsight UI verify | Matches HITL story |
+| ID | Task | Status |
+|----|------|--------|
+| **M7** | **`export_provenance_bundle`** — JSON: meta, queries run, links, timestamps | ✓ |
+| **M8** | **`graph-and-literature` dual-channel** | ✓ prompt + USE_CASES |
+| **M9** | **`bioinsight://investigation-playbook`** | ✓ |
+| **M10** | README GIF: Cursor → dossier → BioInsight UI verify | open |
+| — | **`get_gene_external_links`** (BioInsight 2.2) | ✓ |
 
 ---
 
 ## P2 — Hardening
 
-| ID | Task | Done when |
-|----|------|-----------|
-| **M11** | Integration test fixtures against frozen BioInsight subset | CI green without live Neo4j optional |
+| ID | Task | Status |
+|----|------|--------|
+| **M11** | Integration test fixtures against frozen BioInsight subset | ✓ evidence fixture test |
 | **M12** | Log/tool metadata: `tool-profile`, response char count (for CONTEXT_BUDGET tuning) | Ops visibility |
 | **M13** | Prompt: **public data → local API → MCP** tutorial (no Java required) | New contributor path |
 

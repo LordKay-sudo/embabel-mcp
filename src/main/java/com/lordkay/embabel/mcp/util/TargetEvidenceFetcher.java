@@ -9,7 +9,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.lordkay.embabel.mcp.client.BioInsightApiClient;
 
 /**
- * Fetches target–disease evidence (M4). Prefers future {@code /genes/{id}/evidence} when BioInsight 1.4 ships;
+ * Fetches target–disease evidence (M4). Prefers {@code GET /genes/{id}/evidence} when available;
  * falls back to ranked associations with score-only placeholders.
  */
 public final class TargetEvidenceFetcher {

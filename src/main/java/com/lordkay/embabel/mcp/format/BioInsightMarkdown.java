@@ -66,6 +66,18 @@ public final class BioInsightMarkdown {
             if (root.has("associations") && root.has("evidence_breakdown_available")) {
                 return formatTargetEvidence(root);
             }
+            if (root.has("payload") && root.get("payload").has("evidence")) {
+                return formatGeneEvidencePayload(root);
+            }
+            if (root.has("evidence") && root.get("evidence").isArray() && root.has("symbol")) {
+                return formatGeneEvidenceResponse(root);
+            }
+            if (root.has("links") && root.has("gene_id")) {
+                return formatExternalLinks(root);
+            }
+            if (root.has("exported_at") && root.has("queries_run")) {
+                return formatProvenanceBundle(root);
+            }
             return "```json\n" + MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(root) + "\n```";
         } catch (Exception e) {
             return json;
@@ -322,6 +334,86 @@ public final class BioInsightMarkdown {
         }
         if (n.has("resolution_note")) {
             sb.append("\n_").append(n.get("resolution_note").asText()).append("_\n");
+        }
+        return sb.toString();
+    }
+
+    private static String formatGeneEvidencePayload(JsonNode wrapper) {
+        JsonNode payload = wrapper.get("payload");
+        String head =
+                "## Target evidence (API)\n\n- **Gene:** `"
+                        + cell(payload, "gene_id")
+                        + "` ("
+                        + cell(payload, "symbol")
+                        + ")\n\n";
+        return head + formatGeneEvidenceResponse(payload);
+    }
+
+    private static String formatGeneEvidenceResponse(JsonNode n) {
+        StringBuilder sb = new StringBuilder("## Target evidence");
+        if (n.has("symbol")) {
+            sb.append(": **").append(n.get("symbol").asText()).append("**");
+        }
+        sb.append("\n\n| Disease | Score | Types |\n|---------|------:|-------|\n");
+        if (!n.has("evidence") || !n.get("evidence").isArray()) {
+            return sb + "\n_No evidence bundles._\n";
+        }
+        for (JsonNode bundle : n.get("evidence")) {
+            String types = summarizeEvidenceTypes(bundle.get("evidence"));
+            sb.append("| ")
+                    .append(cell(bundle, "disease_name"))
+                    .append(" | ")
+                    .append(String.format("%.3f", bundle.get("score").asDouble()))
+                    .append(" | ")
+                    .append(types)
+                    .append(" |\n");
+        }
+        return sb.toString();
+    }
+
+    private static String summarizeEvidenceTypes(JsonNode evidenceArr) {
+        if (evidenceArr == null || !evidenceArr.isArray() || evidenceArr.isEmpty()) {
+            return "—";
+        }
+        StringBuilder tb = new StringBuilder();
+        for (JsonNode e : evidenceArr) {
+            if (!tb.isEmpty()) {
+                tb.append(", ");
+            }
+            tb.append(cell(e, "evidence_type"));
+        }
+        return tb.toString();
+    }
+
+    private static String formatExternalLinks(JsonNode n) {
+        StringBuilder sb = new StringBuilder("## External links for **");
+        sb.append(cell(n, "symbol")).append("**\n\n");
+        if (!n.has("links")) {
+            return sb + "_No links._\n";
+        }
+        for (JsonNode link : n.get("links")) {
+            sb.append("- [")
+                    .append(cell(link, "label"))
+                    .append("](")
+                    .append(cell(link, "url"))
+                    .append(") (`")
+                    .append(cell(link, "provider"))
+                    .append("`)\n");
+        }
+        return sb.toString();
+    }
+
+    private static String formatProvenanceBundle(JsonNode n) {
+        StringBuilder sb = new StringBuilder("## Provenance bundle\n\n");
+        sb.append("- **Exported:** ").append(cell(n, "exported_at")).append("\n");
+        sb.append("- **Gene:** ").append(cell(n, "symbol")).append(" (`").append(cell(n, "gene_id")).append("`)\n");
+        sb.append("- **Verify UI:** ").append(cell(n, "verify_ui_url")).append("\n");
+        if (n.has("meta") && n.get("meta").has("data_version")) {
+            sb.append("- **Data version:** `").append(n.get("meta").get("data_version").asText()).append("`\n");
+        }
+        sb.append("\n### Queries run\n\n");
+        for (JsonNode q : n.get("queries_run")) {
+            sb.append("- `").append(q.asText()).append("`\n");
         }
         return sb.toString();
     }

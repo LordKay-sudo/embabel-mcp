@@ -10,6 +10,7 @@ import com.lordkay.embabel.mcp.config.BioInsightProperties;
 import com.lordkay.embabel.mcp.config.McpContextProperties;
 import com.lordkay.embabel.mcp.util.IdentifierResolver;
 import com.lordkay.embabel.mcp.util.IdentifierResolver.EntityType;
+import com.lordkay.embabel.mcp.util.ProvenanceBundleExporter;
 import com.lordkay.embabel.mcp.util.TargetEvidenceFetcher;
 
 /** M3, M4 — resolution and evidence tools (standard and full profiles). */
@@ -47,5 +48,46 @@ public class BioInsightPlanningExtendedMcpTools extends BioInsightToolSupport {
         int cap = limit != null ? limit : context.getDefaultDiseaseLimit();
         String json = TargetEvidenceFetcher.fetch(api, geneIdOrSymbol, diseaseId, cap);
         return respond(json, format, true);
+    }
+
+    @McpTool(
+            name = "get_gene_external_links",
+            description = "Federated links: Ensembl, Open Targets, UniProt (BioInsight 2.2).")
+    public String getGeneExternalLinks(
+            @McpToolParam(description = "Gene symbol or ENSG id", required = true) String geneIdOrSymbol,
+            @McpToolParam(description = "markdown or json", required = false) String format) {
+        String geneId = resolveEnsg(api, geneIdOrSymbol);
+        if (geneId == null) {
+            return respond("{\"error\":true,\"detail\":\"Gene not found: " + geneIdOrSymbol + "\"}", format);
+        }
+        return respond(api.get("/genes/" + geneId + "/external-links"), format);
+    }
+
+    @McpTool(
+            name = "export_provenance_bundle",
+            description = "M7: JSON audit bundle — meta, resolution, external links, evidence sample, UI URL.")
+    public String exportProvenanceBundle(
+            @McpToolParam(description = "Gene symbol or ENSG id", required = true) String geneIdOrSymbol,
+            @McpToolParam(description = "markdown or json (default json)", required = false) String format) {
+        String json = ProvenanceBundleExporter.export(api, properties.getWebUiBaseUrl(), geneIdOrSymbol);
+        return respond(json, format, true);
+    }
+
+    private static String resolveEnsg(BioInsightApiClient api, String geneIdOrSymbol) {
+        if (geneIdOrSymbol.matches("ENSG\\d{11}")) {
+            return geneIdOrSymbol;
+        }
+        String resolved = IdentifierResolver.resolveGene(api, geneIdOrSymbol);
+        if (resolved.contains("\"error\":true")) {
+            return null;
+        }
+        try {
+            return new com.fasterxml.jackson.databind.ObjectMapper()
+                    .readTree(resolved)
+                    .get("canonical_id")
+                    .asText();
+        } catch (Exception ex) {
+            return null;
+        }
     }
 }

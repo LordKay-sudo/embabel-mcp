@@ -1,0 +1,25 @@
+{
+  "gene_id": "ENSG00000012048",
+  "symbol": "BRCA1",
+  "disease_id": null,
+  "evidence": [
+    {
+      "disease_id": "MONDO_0007254",
+      "disease_name": "breast cancer",
+      "score": 0.82,
+      "source": "opentargets",
+      "evidence": [
+        {
+          "evidence_type": "genetic_association",
+          "source": "gwas_catalog",
+          "score": 0.45
+        },
+        {
+          "evidence_type": "literature",
+          "source": "europepmc",
+          "score": 0.22
+        }
+      ]
+    }
+  ]
+}
