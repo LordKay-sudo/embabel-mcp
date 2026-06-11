@@ -76,6 +76,8 @@ Most tools accept optional `format`: **`markdown`** (default) or **`json`**.
 | `get_target_evidence` | Gene–disease evidence breakdown or association scores (standard+) |
 | `get_gene_external_links` | Ensembl, Open Targets, UniProt deep links (standard+) |
 | `export_provenance_bundle` | M7 audit JSON: meta, queries, links, evidence sample (standard+) |
+| `batch_gene_lookup` | Resolve many symbols/ids at once (BioInsight 3.4) (standard+) |
+| `export_gene_report` | Analyst report with provenance columns (BioInsight 3.5) (standard+) |
 | `build_target_dossier` | Full markdown handoff: detail + diseases + neighbors + stats + provenance + UI link |
 | `investigate_gene_symbol` | search + detail + ranked diseases + neighbors (lighter than dossier) |
 

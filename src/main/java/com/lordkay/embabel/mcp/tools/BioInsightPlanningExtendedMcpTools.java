@@ -73,6 +73,47 @@ public class BioInsightPlanningExtendedMcpTools extends BioInsightToolSupport {
         return respond(json, format, true);
     }
 
+    @McpTool(
+            name = "batch_gene_lookup",
+            description = "Resolve many gene symbols/ids at once (BioInsight 3.4). Returns hits + unresolved.")
+    public String batchGeneLookup(
+            @McpToolParam(description = "Comma-separated symbols or ENSG ids", required = true) String symbols,
+            @McpToolParam(description = "markdown or json", required = false) String format) {
+        String[] parts = symbols.split(",");
+        StringBuilder arr = new StringBuilder("[");
+        boolean first = true;
+        for (String p : parts) {
+            String q = p.trim();
+            if (q.isEmpty()) {
+                continue;
+            }
+            if (!first) {
+                arr.append(",");
+            }
+            arr.append("\"").append(q.replace("\"", "\\\"")).append("\"");
+            first = false;
+        }
+        arr.append("]");
+        String body = "{\"queries\":" + arr + "}";
+        return respond(api.postJson("/genes/batch-lookup", body), format, true);
+    }
+
+    @McpTool(
+            name = "export_gene_report",
+            description = "Analyst gene report with provenance columns (BioInsight 3.5). JSON for agents.")
+    public String exportGeneReport(
+            @McpToolParam(description = "Gene symbol or ENSG id", required = true) String geneIdOrSymbol,
+            @McpToolParam(description = "markdown or json", required = false) String format) {
+        String geneId = resolveEnsg(api, geneIdOrSymbol);
+        if (geneId == null) {
+            return respond("{\"error\":true,\"detail\":\"Gene not found: " + geneIdOrSymbol + "\"}", format);
+        }
+        return respond(
+                api.get("/export/gene-report", java.util.Map.of("gene_id", geneId, "format", "json")),
+                format,
+                true);
+    }
+
     private static String resolveEnsg(BioInsightApiClient api, String geneIdOrSymbol) {
         if (geneIdOrSymbol.matches("ENSG\\d{11}")) {
             return geneIdOrSymbol;

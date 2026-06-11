@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.Map;
 
 import org.springframework.http.HttpStatusCode;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -35,6 +36,31 @@ public class BioInsightApiClient {
             return restClient
                     .get()
                     .uri(uri)
+                    .retrieve()
+                    .onStatus(HttpStatusCode::is4xxClientError, (request, response) -> {
+                        String body = new String(response.getBody().readAllBytes());
+                        throw new BioInsightApiException(response.getStatusCode().value(), body);
+                    })
+                    .onStatus(HttpStatusCode::is5xxServerError, (request, response) -> {
+                        String body = new String(response.getBody().readAllBytes());
+                        throw new BioInsightApiException(response.getStatusCode().value(), body);
+                    })
+                    .body(String.class);
+        } catch (BioInsightApiException ex) {
+            return errorJson(ex.status(), ex.body());
+        } catch (Exception ex) {
+            return errorJson(503, "Failed to reach BioInsight API at " + baseUrl + ": " + ex.getMessage());
+        }
+    }
+
+    public String postJson(String path, String jsonBody) {
+        URI uri = UriComponentsBuilder.fromHttpUrl(baseUrl).path(normalizePath(path)).build(true).toUri();
+        try {
+            return restClient
+                    .post()
+                    .uri(uri)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(jsonBody)
                     .retrieve()
                     .onStatus(HttpStatusCode::is4xxClientError, (request, response) -> {
                         String body = new String(response.getBody().readAllBytes());

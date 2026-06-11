@@ -60,6 +60,8 @@ Do not add a third “community summary” channel unless BioInsight graph is la
 | **M9** | **`bioinsight://investigation-playbook`** | ✓ |
 | **M10** | README GIF: Cursor → dossier → BioInsight UI verify | open |
 | — | **`get_gene_external_links`** (BioInsight 2.2) | ✓ |
+| — | **`batch_gene_lookup`** (BioInsight 3.4) | ✓ |
+| — | **`export_gene_report`** (BioInsight 3.5) | ✓ |
 
 ---
 

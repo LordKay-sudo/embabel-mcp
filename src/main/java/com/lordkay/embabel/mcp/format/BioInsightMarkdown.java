@@ -78,6 +78,12 @@ public final class BioInsightMarkdown {
             if (root.has("exported_at") && root.has("queries_run")) {
                 return formatProvenanceBundle(root);
             }
+            if (root.has("hits") && root.has("unresolved")) {
+                return formatBatchLookup(root);
+            }
+            if (root.has("associations") && root.has("provenance")) {
+                return formatGeneReport(root);
+            }
             return "```json\n" + MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(root) + "\n```";
         } catch (Exception e) {
             return json;
@@ -399,6 +405,59 @@ public final class BioInsightMarkdown {
                     .append(") (`")
                     .append(cell(link, "provider"))
                     .append("`)\n");
+        }
+        return sb.toString();
+    }
+
+    private static String formatBatchLookup(JsonNode n) {
+        StringBuilder sb = new StringBuilder("## Batch gene lookup\n\n");
+        JsonNode hits = n.get("hits");
+        if (hits != null && hits.size() > 0) {
+            sb.append("| Query | Symbol | Gene ID | Diseases |\n|-------|--------|---------|---------:|\n");
+            for (JsonNode h : hits) {
+                sb.append("| ")
+                        .append(cell(h, "query"))
+                        .append(" | ")
+                        .append(cell(h, "symbol"))
+                        .append(" | `")
+                        .append(cell(h, "gene_id"))
+                        .append("` | ")
+                        .append(h.has("disease_count") ? h.get("disease_count").asInt() : 0)
+                        .append(" |\n");
+            }
+        } else {
+            sb.append("_No matches._\n");
+        }
+        JsonNode unresolved = n.get("unresolved");
+        if (unresolved != null && unresolved.size() > 0) {
+            sb.append("\n**Unresolved:** ");
+            for (JsonNode u : unresolved) {
+                sb.append("`").append(u.asText()).append("` ");
+            }
+            sb.append("\n");
+        }
+        return sb.toString();
+    }
+
+    private static String formatGeneReport(JsonNode n) {
+        StringBuilder sb = new StringBuilder("## Gene report: **");
+        sb.append(cell(n, "symbol")).append("**\n\n");
+        JsonNode prov = n.get("provenance");
+        if (prov != null) {
+            sb.append("- **Data version:** `").append(cell(prov, "data_version")).append("`\n");
+            sb.append("- **Release date:** ").append(cell(prov, "release_date")).append("\n\n");
+        }
+        sb.append("| Disease | Score | Source | Evidence types |\n|---------|------:|--------|----------------|\n");
+        for (JsonNode a : n.get("associations")) {
+            sb.append("| ")
+                    .append(cell(a, "disease_name"))
+                    .append(" | ")
+                    .append(String.format("%.3f", a.get("score").asDouble()))
+                    .append(" | ")
+                    .append(cell(a, "source"))
+                    .append(" | ")
+                    .append(cell(a, "evidence_types"))
+                    .append(" |\n");
         }
         return sb.toString();
     }
