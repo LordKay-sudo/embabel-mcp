@@ -42,3 +42,9 @@ management:
     web:
       exposure:
         include: health,info
+
+logging:
+  level:
+    # M12 ops visibility: per-response tool-profile + char count for CONTEXT_BUDGET tuning.
+    # Set to OFF to silence, or keep DEBUG to record response sizes.
+    bioinsight.mcp.metrics: ${BIOINSIGHT_MCP_METRICS_LOG_LEVEL:DEBUG}

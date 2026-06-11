@@ -2,11 +2,16 @@ package com.lordkay.embabel.mcp.format;
 
 import com.lordkay.embabel.mcp.config.McpContextProperties;
 import com.lordkay.embabel.mcp.config.McpContextProperties.CompactMode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Optional response-size handling. Default is full fidelity: no truncation of biomedical tool output.
  */
 public final class McpResponseCompactor {
+
+    /** Ops visibility for CONTEXT_BUDGET tuning (M12): tool-profile + response size per call. */
+    private static final Logger METRICS_LOG = LoggerFactory.getLogger("bioinsight.mcp.metrics");
 
     public enum ResponseKind {
         /** build_target_dossier, investigate_gene_symbol, markdown dossiers */
@@ -22,13 +27,17 @@ public final class McpResponseCompactor {
      */
     public static String finish(String body, McpContextProperties config, ResponseKind kind) {
         if (body == null) {
+            logMetrics(config, kind, 0, false);
             return "";
         }
         boolean workflowExempt =
                 kind == ResponseKind.workflow && config.isExemptWorkflowToolsFromTruncation();
 
+        boolean truncated = false;
         if (!workflowExempt && config.getCompactMode() == CompactMode.truncate) {
+            int before = body.length();
             body = truncateIfNeeded(body, config.getMaxResponseChars());
+            truncated = body.length() < before;
         }
 
         if (config.getCompactMode() == CompactMode.warn
@@ -36,7 +45,27 @@ public final class McpResponseCompactor {
             body = appendAdvisory(body, config.getWarnResponseChars());
         }
 
+        logMetrics(config, kind, body.length(), truncated);
         return body;
+    }
+
+    /**
+     * Emits one structured line per tool response so operators can tune CONTEXT_BUDGET:
+     * tool-profile, response kind, char count, approx tokens, and whether truncation fired.
+     */
+    private static void logMetrics(
+            McpContextProperties config, ResponseKind kind, int chars, boolean truncated) {
+        if (!METRICS_LOG.isDebugEnabled()) {
+            return;
+        }
+        METRICS_LOG.debug(
+                "mcp_response tool_profile={} compact_mode={} kind={} chars={} approx_tokens={} truncated={}",
+                config.getToolProfile(),
+                config.getCompactMode(),
+                kind,
+                chars,
+                Math.max(1, chars / 4),
+                truncated);
     }
 
     /** @deprecated use {@link #finish} */

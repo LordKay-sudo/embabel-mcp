@@ -58,7 +58,7 @@ Do not add a third “community summary” channel unless BioInsight graph is la
 | **M7** | **`export_provenance_bundle`** — JSON: meta, queries run, links, timestamps | ✓ |
 | **M8** | **`graph-and-literature` dual-channel** | ✓ prompt + USE_CASES |
 | **M9** | **`bioinsight://investigation-playbook`** | ✓ |
-| **M10** | README GIF: Cursor → dossier → BioInsight UI verify | open |
+| **M10** | README GIF: Cursor → dossier → BioInsight UI verify | ✓ [MCP_DEMO.md](./MCP_DEMO.md) + BioInsight walkthrough GIF |
 | — | **`get_gene_external_links`** (BioInsight 2.2) | ✓ |
 | — | **`batch_gene_lookup`** (BioInsight 3.4) | ✓ |
 | — | **`export_gene_report`** (BioInsight 3.5) | ✓ |
@@ -70,8 +70,8 @@ Do not add a third “community summary” channel unless BioInsight graph is la
 | ID | Task | Status |
 |----|------|--------|
 | **M11** | Integration test fixtures against frozen BioInsight subset | ✓ evidence fixture test |
-| **M12** | Log/tool metadata: `tool-profile`, response char count (for CONTEXT_BUDGET tuning) | Ops visibility |
-| **M13** | Prompt: **public data → local API → MCP** tutorial (no Java required) | New contributor path |
+| **M12** | Log/tool metadata: `tool-profile`, response char count (for CONTEXT_BUDGET tuning) | ✓ `bioinsight.mcp.metrics` debug log per response |
+| **M13** | Prompt: **public data → local API → MCP** tutorial (no Java required) | ✓ `public-data-to-mcp-tutorial` prompt |
 
 ---
 

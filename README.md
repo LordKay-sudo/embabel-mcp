@@ -102,6 +102,7 @@ Most tools accept optional `format`: **`markdown`** (default) or **`json`**.
 | `top-targets-for-disease` | Disease-first: plan, resolve disease, `get_disease_genes` |
 | `graph-and-literature` | Dual-channel: dossier first; `kg_rag_ask` only if sparse or literature question |
 | `review-gene-report` | **HITL:** human verifies http://localhost:8080 before trusting report |
+| `public-data-to-mcp-tutorial` | Onboarding: public data → local BioInsight API → MCP in Cursor (no Java edits) |
 
 ## Human-in-the-loop
 
@@ -217,6 +218,7 @@ See [docs/CONTEXT_BUDGET.md](docs/CONTEXT_BUDGET.md) and [docs/RESPONSE_POLICY.m
 | `EMBABEL_DEFAULT_LLM` | `x-ai/grok-4.1-fast:free` | Default model id |
 | `KG_RAG_ENABLED` | `false` | Enable kg-rag-demo tools |
 | `KG_RAG_API_BASE_URL` | `http://localhost:8001/api/v1` | KG RAG FastAPI base |
+| `BIOINSIGHT_MCP_METRICS_LOG_LEVEL` | `DEBUG` | M12: log `bioinsight.mcp.metrics` per tool response (chars, profile) |
 
 ## Docker
 
@@ -263,6 +265,7 @@ docker run --rm -p 1337:1337 \
 | [docs/RESPONSE_POLICY.md](docs/RESPONSE_POLICY.md) | When compaction runs; workflow exemption; config |
 | [docs/CONTEXT_BUDGET.md](docs/CONTEXT_BUDGET.md) | Characters vs tokens; staying under host 120k |
 | [docs/HUMAN_IN_THE_LOOP.md](docs/HUMAN_IN_THE_LOOP.md) | Review workflows |
+| [docs/MCP_DEMO.md](docs/MCP_DEMO.md) | Cursor → dossier → UI verify (M10) |
 | [ECOSYSTEM_CONTEXT](https://github.com/LordKay-sudo/bioinsight-graph/blob/main/docs/ECOSYSTEM_CONTEXT.md) | Compact handoff for new agent sessions |
 
 ## Development
