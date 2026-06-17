@@ -44,7 +44,7 @@ Do not add a third “community summary” channel unless BioInsight graph is la
 |----|------|--------|
 | **M1** | **`plan_investigation`** — JSON plan before dossier | ✓ tool + USE_CASES |
 | **M2** | **Route by intent** in prompts | ✓ gene / disease / compare / literature paths |
-| **M3** | **`resolve_identifier`** | ✓ search-based; full ontology when BioInsight 2.x ships |
+| **M3** | **`resolve_identifier`** | ✓ search-based; **revisit done** — BioInsight `GET /resolve` |
 | **M4** | **`get_target_evidence`** | ✓ uses `/evidence` when present; else association scores |
 | **M5** | Dossier footer: **`data_version`** + source URLs from `/meta` | ✓ |
 | **M6** | **`adaptive-gene-investigation`** prompt | ✓ plan → resolve → branch |
@@ -108,7 +108,7 @@ Never use `compact-mode=truncate` for target–disease work. See [RESPONSE_POLIC
 
 1. **M7, M8** (provenance bundle + tighten dual-channel in host workflows)  
 2. **M10–M13** (demo GIF, fixtures, ops logging, tutorial prompt)  
-3. Revisit **M3/M4** when BioInsight **1.4 / 2.x** adds typed evidence and ontology resolve API
+3. Revisit **M3/M4** when BioInsight **1.4 / 2.x** adds typed evidence and ontology resolve API — **done** (`GET /resolve`, `/genes/{id}/evidence`)
 
 ---
 

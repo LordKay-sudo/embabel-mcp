@@ -11,14 +11,16 @@ import com.lordkay.embabel.mcp.config.BioInsightProperties;
 class IdentifierResolverTest {
 
     @Test
-    void resolveGene_parsesSearchHits() {
+    void resolveGene_usesResolveEndpoint() {
         BioInsightProperties props = new BioInsightProperties();
         props.setApiBaseUrl("http://example.test/api/v1");
         BioInsightApiClient api = new BioInsightApiClient(props) {
             @Override
             public String get(String path, java.util.Map<String, String> queryParams) {
+                assertTrue(path.endsWith("/resolve"));
+                assertTrue(queryParams.get("query").equals("BRCA1"));
                 return """
-                        [{"id":"ENSG00000012048","symbol":"BRCA1","name":"BRCA1 DNA repair"}]
+                        {"entity_type":"gene","canonical_id":"ENSG00000012048","id_system":"ENSG","symbol":"BRCA1","ambiguous":false,"resolution_note":"ok","candidates":[]}
                         """;
             }
         };

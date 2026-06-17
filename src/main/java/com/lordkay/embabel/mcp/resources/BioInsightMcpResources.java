@@ -153,7 +153,8 @@ class BioInsightMcpExtendedResources {
 
                 **Ambiguity:** if resolve_identifier returns candidates, stop and ask the user.
 
-                **Evidence:** `get_target_evidence` after dossier for typed breakdown (full when BioInsight 1.4 ships).
+                **Evidence:** `get_target_evidence` after dossier for typed breakdown via `/genes/{id}/evidence`.
+                **Resolve:** `resolve_identifier` calls BioInsight `GET /resolve` (ontology-aware; ambiguity in `candidates`).
 
                 **Profiles:** minimal = plan + dossier + search; standard adds resolve + evidence; full adds neighbors/subgraph.
 

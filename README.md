@@ -72,7 +72,7 @@ Most tools accept optional `format`: **`markdown`** (default) or **`json`**.
 | `get_gene_neighbors` | `GET /api/v1/genes/{id}/neighbors` |
 | `export_gene_subgraph` | `GET /api/v1/export/subgraph?gene_id=` |
 | `plan_investigation` | JSON plan: intent, entities, tool sequence, stop rules (call before dossier) |
-| `resolve_identifier` | Symbol or disease name → canonical id + ambiguity notes (standard+) |
+| `resolve_identifier` | `GET /resolve` |
 | `get_target_evidence` | Gene–disease evidence breakdown or association scores (standard+) |
 | `get_gene_external_links` | Ensembl, Open Targets, UniProt deep links (standard+) |
 | `export_provenance_bundle` | M7 audit JSON: meta, queries, links, evidence sample (standard+) |
