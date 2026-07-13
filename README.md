@@ -80,6 +80,13 @@ Most tools accept optional `format`: **`markdown`** (default) or **`json`**.
 | `export_gene_report` | Analyst report with provenance columns (BioInsight 3.5) (standard+) |
 | `build_target_dossier` | Full markdown handoff: detail + diseases + neighbors + stats + provenance + UI link |
 | `investigate_gene_symbol` | search + detail + ranked diseases + neighbors (lighter than dossier) |
+| `plan_gap_investigation` | GapForge plan (COU, L2 sequence, stop rules) |
+| `build_program_dossier` | Stalled-program dossier (`GET /programs/{id}/dossier`) |
+| `propose_gap_hypotheses` | List/create L2 cards (`needs_review` — HITL required) |
+| `run_critic` | Adversarial critic on a gap id |
+| `export_review_bundle` | Provenance export (`team_conclusions` = approved only) |
+
+Agent export: `research_program_gaps` · Prompt: `investigate-stalled-program`
 
 ## MCP resources
 

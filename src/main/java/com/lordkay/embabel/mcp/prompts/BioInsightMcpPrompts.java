@@ -392,7 +392,32 @@ public class BioInsightMcpPrompts {
 
     }
 
+    @McpPrompt(
+            name = "investigate-stalled-program",
+            description = "GapForge workflow: plan → dossier → hypotheses → critic → UI HITL review")
+    public GetPromptResult investigateStalledProgram(
+            @McpArg(name = "program_id", description = "Program id e.g. prog-flurizan-ad", required = false)
+                    String programId) {
+        String pid =
+                programId == null || programId.isBlank() ? "prog-flurizan-ad" : programId.trim();
+        String text =
+                """
+                BioInsight **GapForge** — stalled-program gap investigation (L2; HITL required).
 
+                COU: literature-backed gap hypotheses for scientific discussion — not clinical care or regulatory submission.
+
+                1. `plan_gap_investigation` question="Why did %s stall?" programId="%s"
+                2. `build_program_dossier` programId="%s" (format=markdown)
+                3. `propose_gap_hypotheses` programId="%s" create=false (list existing cards)
+                4. `run_critic` on each gap id of interest
+                5. Do **not** treat cards as conclusions — open http://localhost:8080/gaps/review
+                6. After human approve/reject, `export_review_bundle` programId="%s"
+
+                L3 (chemistry / dosing / patient advice) is blocked.
+                """
+                        .formatted(pid, pid, pid, pid, pid);
+        return prompt("GapForge: investigate " + pid, text);
+    }
 
     private static GetPromptResult prompt(String title, String userText) {
 
