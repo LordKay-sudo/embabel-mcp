@@ -31,6 +31,7 @@ public final class GapInvestigationPlanner {
                         "build_program_dossier",
                         "propose_gap_hypotheses",
                         "run_critic",
+                        "discern_artifact",
                         "export_review_bundle"));
         plan.put(
                 "stop_rules",
@@ -38,7 +39,8 @@ public final class GapInvestigationPlanner {
                         "Do not approve L2 hypotheses via MCP — use web HITL review queue",
                         "Do not invent chemistry, doses, or patient advice (L3 blocked)",
                         "If dual-channel evidence missing, set insufficient_evidence=true",
-                        "Always run critic before asking a human to approve"));
+                        "Always run critic and discern_artifact before asking a human to approve",
+                        "If discern action=block, do not present as a team conclusion"));
         plan.put(
                 "hitl",
                 Map.of(

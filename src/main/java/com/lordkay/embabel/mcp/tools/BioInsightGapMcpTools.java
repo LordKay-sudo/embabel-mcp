@@ -177,6 +177,59 @@ public class BioInsightGapMcpTools extends BioInsightToolSupport {
         return respond(json, "json", true);
     }
 
+    @McpTool(
+            name = "discern_artifact",
+            description =
+                    "Universal Discern: weigh input/output against compliance, reliability, provenance, and safety_language thresholds. Returns pass|soft_fail|hard_fail and action allow|require_hitl|block. Never auto-approves L2.")
+    public String discernArtifact(
+            @McpToolParam(
+                            description =
+                                    "Artifact type: gap_hypothesis | rag_answer | mcp_tool_result | paper | generic",
+                            required = true)
+                    String artifactType,
+            @McpToolParam(description = "Risk tier L0|L1|L2|L3 (default L2)", required = false)
+                    String riskTier,
+            @McpToolParam(description = "Context of Use string", required = false) String cou,
+            @McpToolParam(
+                            description =
+                                    "JSON object for output to weigh (claim, confidence, literature_refs, ...)",
+                            required = true)
+                    String outputJson,
+            @McpToolParam(description = "Optional JSON object for input context", required = false)
+                    String inputJson,
+            @McpToolParam(description = "markdown or json", required = false) String format) {
+        String tier = riskTier == null || riskTier.isBlank() ? "L2" : riskTier.trim();
+        String couVal = cou == null || cou.isBlank() ? COU : cou;
+        String inObj = inputJson == null || inputJson.isBlank() ? "{}" : inputJson.trim();
+        String outObj = outputJson == null || outputJson.isBlank() ? "{}" : outputJson.trim();
+        String body =
+                "{"
+                        + "\"artifact_type\":\""
+                        + escape(artifactType)
+                        + "\","
+                        + "\"risk_tier\":\""
+                        + escape(tier)
+                        + "\","
+                        + "\"cou\":\""
+                        + escape(couVal)
+                        + "\","
+                        + "\"input\":"
+                        + inObj
+                        + ","
+                        + "\"output\":"
+                        + outObj
+                        + "}";
+        String json = api.postJson("/discern", body);
+        if (wantsMarkdown(format)) {
+            return respond(
+                    "## Discern result\n\n"
+                            + BioInsightMarkdown.format(json)
+                            + "\n\n**Note:** Discern never auto-approves L2 team conclusions.\n",
+                    "markdown");
+        }
+        return respond(json, "json", true);
+    }
+
     private String finishPropose(String json, String format) {
         if (wantsMarkdown(format)) {
             String ui = properties.getWebUiBaseUrl().replaceAll("/$", "") + "/gaps/review";
