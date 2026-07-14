@@ -85,6 +85,7 @@ Most tools accept optional `format`: **`markdown`** (default) or **`json`**.
 | `propose_gap_hypotheses` | List/create L2 cards (`needs_review` — HITL required) |
 | `run_critic` | Adversarial critic on a gap id |
 | `export_review_bundle` | Provenance export (`team_conclusions` = approved only) |
+| `run_gap_discern` | Persist Discern score on a stored gap (approve-gate source of truth) |
 | `discern_artifact` | Universal I/O weigh: compliance / reliability / provenance / safety thresholds |
 
 Agent export: `research_program_gaps` · Prompt: `investigate-stalled-program`

@@ -146,6 +146,26 @@ public class BioInsightGapMcpTools extends BioInsightToolSupport {
     }
 
     @McpTool(
+            name = "run_gap_discern",
+            description =
+                    "Run Discern on a stored GapHypothesis and persist discern_json (source of truth for approve gate). Prefer this over discern_artifact when the gap already exists.")
+    public String runGapDiscern(
+            @McpToolParam(description = "Gap hypothesis id", required = true) String gapId,
+            @McpToolParam(description = "markdown or json", required = false) String format) {
+        String json = api.postJson("/gaps/" + gapId + "/discern", "{}");
+        if (wantsMarkdown(format)) {
+            return respond(
+                    "## Gap Discern\n\n"
+                            + BioInsightMarkdown.format(json)
+                            + "\n\n**Note:** Result is stored on the gap. If action=block, do not approve.\n\n**COU:** "
+                            + COU
+                            + "\n",
+                    "markdown");
+        }
+        return respond(json, "json", true);
+    }
+
+    @McpTool(
             name = "export_review_bundle",
             description =
                     "Export GapForge provenance/review bundle. team_conclusions only includes approved cards.")
