@@ -8,13 +8,15 @@ import com.lordkay.embabel.mcp.config.BioInsightHitlProperties;
 import com.lordkay.embabel.mcp.config.BioInsightProperties;
 import com.lordkay.embabel.mcp.config.KgRagProperties;
 import com.lordkay.embabel.mcp.config.McpContextProperties;
+import com.lordkay.embabel.mcp.config.OntoHarnessProperties;
 
 @SpringBootApplication
 @EnableConfigurationProperties({
     BioInsightProperties.class,
     BioInsightHitlProperties.class,
     KgRagProperties.class,
-    McpContextProperties.class
+    McpContextProperties.class,
+    OntoHarnessProperties.class
 })
 public class EmbabelMcpApplication {
 
