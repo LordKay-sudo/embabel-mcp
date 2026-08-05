@@ -21,6 +21,7 @@ Default MCP deployment: `bioinsight.hitl.enabled=false` (auto-approved) so SSE c
 | `propose_gap_hypotheses` | List or create `needs_review` cards |
 | `run_critic` | Adversarial confidence clamp |
 | `export_review_bundle` | Audit export (`team_conclusions` = approved only) |
+| `export_approved_rdf` | Turtle RDF export for HITL-approved gaps (OntoHarness-validated snapshots) |
 | `research_program_gaps` | Embabel agent export |
 | Prompt `investigate-stalled-program` | Guided workflow |
 

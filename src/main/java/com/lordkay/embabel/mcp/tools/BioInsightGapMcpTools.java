@@ -8,6 +8,7 @@ import com.lordkay.embabel.mcp.client.BioInsightApiClient;
 import com.lordkay.embabel.mcp.config.BioInsightProperties;
 import com.lordkay.embabel.mcp.config.McpContextProperties;
 import com.lordkay.embabel.mcp.format.BioInsightMarkdown;
+import com.lordkay.embabel.mcp.format.McpResponseCompactor;
 import com.lordkay.embabel.mcp.planning.GapInvestigationPlanner;
 
 /**
@@ -195,6 +196,46 @@ public class BioInsightGapMcpTools extends BioInsightToolSupport {
                     "markdown");
         }
         return respond(json, "json", true);
+    }
+
+    @McpTool(
+            name = "export_approved_rdf",
+            description =
+                    "Export SHACL-validated Turtle for approved L2 gap hypotheses (snapshots written at HITL approve). "
+                            + "Requires human approval in the GapForge review UI first.")
+    public String exportApprovedRdf(
+            @McpToolParam(description = "Program id (export all approved gaps for program)", required = false)
+                    String programId,
+            @McpToolParam(description = "Gap id (export single approved gap)", required = false) String gapId,
+            @McpToolParam(description = "turtle or markdown (default turtle)", required = false) String format) {
+        java.util.Map<String, String> q = new java.util.LinkedHashMap<>();
+        if (programId != null && !programId.isBlank()) {
+            q.put("program_id", programId);
+        }
+        if (gapId != null && !gapId.isBlank()) {
+            q.put("gap_id", gapId);
+        }
+        if (q.isEmpty()) {
+            return respond(
+                    "{\"error\":true,\"detail\":\"Provide program_id and/or gap_id\"}", "json", true);
+        }
+        String turtle = api.get("/export/approved-rdf", q);
+        if (turtle.contains("\"error\":true")) {
+            return respond(turtle, "json", true);
+        }
+        if (wantsMarkdown(format)) {
+            String md =
+                    "## Approved RDF export\n\n```turtle\n"
+                            + turtle
+                            + "```\n\n**Note:** Only gaps with status=approved are included. "
+                            + "Validate proposals with OntoHarness before approve.\n\n**COU:** "
+                            + COU
+                            + "\n";
+            return McpResponseCompactor.finish(
+                    md, context, McpResponseCompactor.ResponseKind.standard);
+        }
+        return McpResponseCompactor.finish(
+                turtle, context, McpResponseCompactor.ResponseKind.standard);
     }
 
     @McpTool(

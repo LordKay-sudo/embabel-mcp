@@ -33,7 +33,8 @@ public final class GapInvestigationPlanner {
                         "run_critic",
                         "discern_artifact",
                         "run_gap_discern",
-                        "export_review_bundle"));
+                        "export_review_bundle",
+                        "export_approved_rdf"));
         plan.put(
                 "stop_rules",
                 List.of(

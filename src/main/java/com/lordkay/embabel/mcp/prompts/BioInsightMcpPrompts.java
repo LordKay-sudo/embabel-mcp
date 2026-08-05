@@ -411,11 +411,11 @@ public class BioInsightMcpPrompts {
                 3. `propose_gap_hypotheses` programId="%s" create=false (list existing cards)
                 4. `run_critic` on each gap id of interest
                 5. Do **not** treat cards as conclusions — open http://localhost:8080/gaps/review
-                6. After human approve/reject, `export_review_bundle` programId="%s"
+                6. After human approve/reject, `export_review_bundle` and `export_approved_rdf` programId="%s"
 
                 L3 (chemistry / dosing / patient advice) is blocked.
                 """
-                        .formatted(pid, pid, pid, pid, pid);
+                        .formatted(pid, pid, pid, pid, pid, pid);
         return prompt("GapForge: investigate " + pid, text);
     }
 
