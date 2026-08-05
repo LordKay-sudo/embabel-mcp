@@ -167,6 +167,27 @@ public class BioInsightGapMcpTools extends BioInsightToolSupport {
     }
 
     @McpTool(
+            name = "run_gap_ontology_validate",
+            description =
+                    "Run OntoHarness vocab gate + SHACL on a stored gap (Neo4j → Turtle projection) and persist ontology_validation_json. "
+                            + "Source of truth for approve gate when ONTOHARNESS_ENABLED=true in GapForge.")
+    public String runGapOntologyValidate(
+            @McpToolParam(description = "Gap hypothesis id", required = true) String gapId,
+            @McpToolParam(description = "markdown or json", required = false) String format) {
+        String json = api.postJson("/gaps/" + gapId + "/ontology-validate", "{}");
+        if (wantsMarkdown(format)) {
+            return respond(
+                    "## Gap OntoHarness validation\n\n"
+                            + BioInsightMarkdown.format(json)
+                            + "\n\n**Note:** Result is stored on the gap. If conforms=false, do not approve.\n\n**COU:** "
+                            + COU
+                            + "\n",
+                    "markdown");
+        }
+        return respond(json, "json", true);
+    }
+
+    @McpTool(
             name = "export_review_bundle",
             description =
                     "Export GapForge provenance/review bundle. team_conclusions only includes approved cards.")

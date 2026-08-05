@@ -76,6 +76,44 @@ public class OntoHarnessMcpTools {
         return formatResponse(client.listDomains(), format);
     }
 
+    @McpTool(
+            name = "bridge_gap_record",
+            description =
+                    "Project a GapForge-shaped gap record (JSON) to Turtle via OntoHarness v0.5 bridge, "
+                            + "optionally running vocab gate + SHACL. Use before propose when testing RDF shape.")
+    public String bridgeGapRecord(
+            @McpToolParam(
+                            description =
+                                    "JSON object: id, claim, confidence, gap_class?, genes?, disease?, approved_at?, provenance_hash?",
+                            required = true)
+                    String recordJson,
+            @McpToolParam(description = "Domain name", required = false) String domain,
+            @McpToolParam(description = "Run validation after projection (default true)", required = false)
+                    Boolean runValidation,
+            @McpToolParam(description = "markdown or json (default json)", required = false) String format) {
+        if (!properties.isEnabled()) {
+            return disabledMessage(format);
+        }
+        try {
+            @SuppressWarnings("unchecked")
+            java.util.Map<String, Object> record =
+                    objectMapper.readValue(recordJson, java.util.Map.class);
+            boolean validate = runValidation == null || runValidation;
+            String dom = domain == null ? properties.getDefaultDomain() : domain;
+            String json = client.bridgeGapRecord(dom, record, validate);
+            if ("markdown".equalsIgnoreCase(format)) {
+                JsonNode node = objectMapper.readTree(json);
+                String turtle = node.path("turtle").asText("");
+                return "```turtle\n" + turtle + "\n```\n\n" + BioInsightMarkdown.format(json);
+            }
+            return json;
+        } catch (Exception ex) {
+            return "{\"conforms\":false,\"error\":\"bridge_failed\",\"detail\":\""
+                    + ex.getMessage().replace("\"", "'")
+                    + "\"}";
+        }
+    }
+
     private String disabledMessage(String format) {
         String msg =
                 "{\"enabled\":false,\"message\":\"Set ONTOHARNESS_ENABLED=true and start the OntoHarness sidecar (port 8010).\"}";

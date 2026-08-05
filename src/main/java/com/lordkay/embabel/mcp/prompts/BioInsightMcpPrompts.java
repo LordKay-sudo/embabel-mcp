@@ -410,8 +410,9 @@ public class BioInsightMcpPrompts {
                 2. `build_program_dossier` programId="%s" (format=markdown)
                 3. `propose_gap_hypotheses` programId="%s" create=false (list existing cards)
                 4. `run_critic` on each gap id of interest
-                5. Do **not** treat cards as conclusions — open http://localhost:8080/gaps/review
-                6. After human approve/reject, `export_review_bundle` and `export_approved_rdf` programId="%s"
+                5. `run_gap_discern` and `run_gap_ontology_validate` on each gap id (persist gates before HITL)
+                6. Do **not** treat cards as conclusions — open http://localhost:8080/gaps/review
+                7. After human approve/reject, `export_review_bundle` and `export_approved_rdf` programId="%s"
 
                 L3 (chemistry / dosing / patient advice) is blocked.
                 """

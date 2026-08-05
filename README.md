@@ -87,7 +87,17 @@ Most tools accept optional `format`: **`markdown`** (default) or **`json`**.
 | `export_review_bundle` | Provenance export (`team_conclusions` = approved only) |
 | `export_approved_rdf` | Turtle export for approved L2 gaps (`GET /export/approved-rdf`) |
 | `run_gap_discern` | Persist Discern score on a stored gap (approve-gate source of truth) |
+| `run_gap_ontology_validate` | Persist OntoHarness SHACL + vocab gate on a stored gap |
 | `discern_artifact` | Universal I/O weigh: compliance / reliability / provenance / safety thresholds |
+
+**OntoHarness** (requires `ONTOHARNESS_ENABLED=true`, sidecar on `:8010`):
+
+| Tool | Description |
+|------|-------------|
+| `validate_proposal` | Validate raw Turtle (vocab gate + SHACL) |
+| `get_repair_hints` | Validation repair hints for agent loops |
+| `bridge_gap_record` | GapForge JSON → Turtle + optional validate |
+| `list_ontoharness_domains` | Registered validation domains |
 
 Agent export: `research_program_gaps` · Prompt: `investigate-stalled-program`
 

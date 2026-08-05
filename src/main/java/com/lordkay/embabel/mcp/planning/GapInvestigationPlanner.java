@@ -33,6 +33,7 @@ public final class GapInvestigationPlanner {
                         "run_critic",
                         "discern_artifact",
                         "run_gap_discern",
+                        "run_gap_ontology_validate",
                         "export_review_bundle",
                         "export_approved_rdf"));
         plan.put(
@@ -41,8 +42,8 @@ public final class GapInvestigationPlanner {
                         "Do not approve L2 hypotheses via MCP — use web HITL review queue",
                         "Do not invent chemistry, doses, or patient advice (L3 blocked)",
                         "If dual-channel evidence missing, set insufficient_evidence=true",
-                        "Always run critic and run_gap_discern (or discern_artifact) before asking a human to approve",
-                        "If discern action=block, do not present as a team conclusion"));
+                        "Always run critic, run_gap_discern, and run_gap_ontology_validate before asking a human to approve",
+                        "If discern action=block or OntoHarness conforms=false, do not present as a team conclusion"));
         plan.put(
                 "hitl",
                 Map.of(

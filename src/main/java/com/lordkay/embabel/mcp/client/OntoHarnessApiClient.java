@@ -66,6 +66,42 @@ public class OntoHarnessApiClient {
         }
     }
 
+    public String bridgeGapRecord(String domain, Map<String, Object> record, boolean runValidation) {
+        try {
+            String body =
+                    objectMapper.writeValueAsString(
+                            Map.of(
+                                    "domain",
+                                    domain,
+                                    "record",
+                                    record,
+                                    "run_validation",
+                                    runValidation));
+            URI uri =
+                    UriComponentsBuilder.fromHttpUrl(baseUrl)
+                            .path("/api/v1/bridge/gap-record")
+                            .build(true)
+                            .toUri();
+            return restClient
+                    .post()
+                    .uri(uri)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(body)
+                    .retrieve()
+                    .onStatus(HttpStatusCode::isError, (request, response) -> {
+                        String err = new String(response.getBody().readAllBytes());
+                        throw new BioInsightApiException(response.getStatusCode().value(), err);
+                    })
+                    .body(String.class);
+        } catch (JsonProcessingException ex) {
+            return errorJson(500, "Failed to encode bridge request: " + ex.getMessage());
+        } catch (BioInsightApiException ex) {
+            return errorJson(ex.status(), ex.body());
+        } catch (Exception ex) {
+            return errorJson(503, "Failed to reach OntoHarness at " + baseUrl + ": " + ex.getMessage());
+        }
+    }
+
     private static String errorJson(int status, String message) {
         String safe = message == null ? "" : message.replace("\\", "\\\\").replace("\"", "\\\"");
         return "{\"conforms\":false,\"error\":" + status + ",\"detail\":\"" + safe + "\"}";
