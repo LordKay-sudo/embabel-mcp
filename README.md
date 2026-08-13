@@ -6,6 +6,14 @@ BioInsight Graph is the product. embabel-mcp is not a replacement, fork, or “w
 
 Built with [Embabel Agent](https://docs.embabel.com/embabel-agent/guide/0.3.1/) (`embabel-agent-starter-mcpserver`).
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Portfolio](https://img.shields.io/badge/portfolio-portfolio.lordkay.com-38bdf8)](https://portfolio.lordkay.com)
+[![Java 21](https://img.shields.io/badge/Java-21-ED8B00?logo=openjdk&logoColor=white)](pom.xml)
+[![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.x-6DB33F?logo=springboot&logoColor=white)](pom.xml)
+[![MCP](https://img.shields.io/badge/MCP-SSE_server-6366F1)](README.md)
+[![Embabel](https://img.shields.io/badge/Embabel-agent-111827)](https://docs.embabel.com/embabel-agent/guide/0.3.1/)
+[![BioInsight Graph](https://img.shields.io/badge/BioInsight_Graph-API_client-009688)](https://github.com/LordKay-sudo/bioinsight-graph)
+
 > **Data notice:** Demo/sample Open Targets–style data only — not for clinical decisions.
 
 ## Architecture
