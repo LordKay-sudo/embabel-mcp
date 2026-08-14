@@ -1,4 +1,5 @@
-target/
+target/*
+!target/embabel-mcp-0.1.0.jar
 .git/
 .idea/
 *.iml

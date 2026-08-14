@@ -1,14 +1,8 @@
-FROM eclipse-temurin:21-jdk-alpine AS build
-WORKDIR /app
-COPY pom.xml mvnw mvnw.cmd ./
-COPY .mvn .mvn
-COPY src ./src
-RUN sed -i 's/\r$//' mvnw && chmod +x mvnw && ./mvnw -q -DskipTests package && cp target/*.jar app.jar
-
+# Pre-built JAR (run locally first: mvnw -DskipTests package)
 FROM eclipse-temurin:21-jre-alpine
 RUN apk add --no-cache curl
 WORKDIR /app
-COPY --from=build /app/app.jar .
+COPY target/embabel-mcp-0.1.0.jar app.jar
 EXPOSE 1337
 ENV MCP_SERVER_PORT=1337
 ENV BIOINSIGHT_API_BASE_URL=http://api:8000/api/v1
